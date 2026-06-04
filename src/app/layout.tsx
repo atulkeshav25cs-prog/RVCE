@@ -16,17 +16,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" className="scroll-smooth">
-        <body className="font-sans antialiased min-h-screen flex flex-col text-slate-900 bg-transparent">
+    <html lang="en" className="scroll-smooth">
+      <body className="font-sans antialiased min-h-screen flex flex-col text-slate-900 bg-transparent">
+        <ClerkProvider>
           <BackgroundSystem />
           <Navbar />
           <main className="flex-grow relative z-10">
             {children}
           </main>
           <Footer />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

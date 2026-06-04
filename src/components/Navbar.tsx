@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Logo from "./Logo";
+import AuthModal from "./AuthModal";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,18 +42,25 @@ export default function Navbar() {
           <Link href="#" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
             Public Records
           </Link>
+          <Link href="/authority/login" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
+            Authority Access
+          </Link>
         </div>
         
         <div className="flex items-center">
-          <button className={`px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.1em] transition-all duration-300 ${
+          <button 
+            onClick={() => setIsAuthModalOpen(true)}
+            className={`px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.1em] transition-all duration-300 ${
             scrolled 
               ? 'bg-slate-900/95 backdrop-blur-sm text-white border-none hover:bg-slate-800' 
               : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white hover:text-slate-900'
           }`}>
-            Report Incident
+            Get Help Now
           </button>
         </div>
       </div>
+      
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </nav>
   );
 }
