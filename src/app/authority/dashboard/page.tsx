@@ -10,6 +10,7 @@ import ResourceStatusWidget from "@/components/dashboard/ResourceStatusWidget";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import IncidentMap from "@/components/dashboard/IncidentMap";
 import WeatherWidget from "@/components/dashboard/WeatherWidget";
+import AuthorityAlertsManager from "@/components/dashboard/AuthorityAlertsManager";
 
 import EmergencyReport from "@/models/EmergencyReport";
 import WomenSafetyReport from "@/models/WomenSafetyReport";
@@ -111,6 +112,8 @@ export default async function AuthorityDashboard() {
         <div className="lg:col-span-4 space-y-6">
           
           <WeatherWidget weather={mockAuthorityData.weatherConditions} />
+          
+          <AuthorityAlertsManager />
 
           {/* Resource Inventory Summary */}
           <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">

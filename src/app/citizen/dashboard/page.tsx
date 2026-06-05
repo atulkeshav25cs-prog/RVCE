@@ -10,6 +10,7 @@ import AdvisoryNotice from "@/components/dashboard/AdvisoryNotice";
 import ProfileCard from "@/components/dashboard/ProfileCard";
 import CitizenDashboardClient from "@/components/dashboard/CitizenDashboardClient";
 import TrustedContactsManager from "@/components/dashboard/TrustedContactsManager";
+import CitizenAlertsBanner from "@/components/dashboard/CitizenAlertsBanner";
 import EmergencyReport from "@/models/EmergencyReport";
 import WomenSafetyReport from "@/models/WomenSafetyReport";
 import Resource from "@/models/Resource";
@@ -63,6 +64,8 @@ export default async function CitizenDashboard() {
       </div>
 
       <SafetyStatusBanner />
+
+      <CitizenAlertsBanner />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
         
