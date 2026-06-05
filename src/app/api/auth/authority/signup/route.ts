@@ -12,8 +12,9 @@ export async function POST(req: Request) {
     }
 
     // Check invite code
-    if (inviteCode !== process.env.NEXT_PUBLIC_AUTHORITY_INVITE_CODE) {
-      return NextResponse.json({ error: "Invalid official invite code" }, { status: 403 });
+    const configuredInviteCode = process.env.NEXT_PUBLIC_AUTHORITY_INVITE_CODE ?? "AEDFFD";
+    if (inviteCode !== configuredInviteCode) {
+      return NextResponse.json({ error: "Invalid invite code. Contact the system administrator or verify the code configured in .env.local." }, { status: 403 });
     }
 
     // Check if user exists
