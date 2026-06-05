@@ -11,6 +11,7 @@ import ProfileCard from "@/components/dashboard/ProfileCard";
 import CitizenDashboardClient from "@/components/dashboard/CitizenDashboardClient";
 import TrustedContactsManager from "@/components/dashboard/TrustedContactsManager";
 import CitizenAlertsBanner from "@/components/dashboard/CitizenAlertsBanner";
+import CitizenIncidentMap from "@/components/dashboard/CitizenIncidentMap";
 import EmergencyReport from "@/models/EmergencyReport";
 import WomenSafetyReport from "@/models/WomenSafetyReport";
 import Resource from "@/models/Resource";
@@ -71,6 +72,7 @@ export default async function CitizenDashboard() {
         
         {/* Main Content (Left 8 Columns) */}
         <div className="lg:col-span-8 space-y-6">
+          <CitizenIncidentMap />
           <CitizenDashboardClient initialReports={enrichedReports.map(r => ({
             id: r.reportId || (r as any)._id?.toString() || Math.random().toString(),
             type: r.emergencyType,

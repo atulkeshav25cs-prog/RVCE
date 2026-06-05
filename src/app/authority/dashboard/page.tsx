@@ -8,7 +8,7 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AuthorityIncidentManager from "@/components/dashboard/AuthorityIncidentManager";
 import ResourceStatusWidget from "@/components/dashboard/ResourceStatusWidget";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
-import IncidentMap from "@/components/dashboard/IncidentMap";
+import LiveIncidentMap from "@/components/dashboard/LiveIncidentMap";
 import WeatherWidget from "@/components/dashboard/WeatherWidget";
 import AuthorityAlertsManager from "@/components/dashboard/AuthorityAlertsManager";
 import AuthorityRecordsManager from "@/components/dashboard/AuthorityRecordsManager";
@@ -106,7 +106,7 @@ export default async function AuthorityDashboard() {
           </div>
 
           {/* Active Incident Map */}
-          <IncidentMap />
+          <LiveIncidentMap />
         </div>
 
         {/* Right Sidebar: Operations & Resources (4 Columns) */}
@@ -133,7 +133,7 @@ export default async function AuthorityDashboard() {
             </div>
           </div>
 
-          <ActivityFeed activities={[]} /> {/* We pass empty array for now, waiting for actual incidents */}
+          <ActivityFeed activities={mockAuthorityData.recentActivities} />
         </div>
 
       </div>

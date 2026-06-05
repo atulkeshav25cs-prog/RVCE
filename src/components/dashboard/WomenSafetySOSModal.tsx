@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShieldAlert, X, MapPin, Loader2, CheckCircle2 } from "lucide-react";
 
 interface WomenSafetySOSModalProps {
@@ -14,6 +14,17 @@ export default function WomenSafetySOSModal({ isOpen, onClose, onSuccess }: Wome
   const [error, setError] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
+  const [coords, setCoords] = useState<{lat: number, lng: number} | null>(null);
+
+  useEffect(() => {
+    if (isOpen && "geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (err) => console.log("Geolocation error:", err.message),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +37,9 @@ export default function WomenSafetySOSModal({ isOpen, onClose, onSuccess }: Wome
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           location,
-          description
+          description,
+          latitude: coords?.lat,
+          longitude: coords?.lng
         })
       });
 
@@ -74,7 +87,10 @@ export default function WomenSafetySOSModal({ isOpen, onClose, onSuccess }: Wome
           )}
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Current Location <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex justify-between">
+              <span>Current Location <span className="text-red-500">*</span></span>
+              {coords && <span className="text-emerald-600 flex items-center text-[10px]"><CheckCircle2 className="w-3 h-3 mr-0.5" /> GPS Locked</span>}
+            </label>
             <div className="relative">
               <input 
                 required 
