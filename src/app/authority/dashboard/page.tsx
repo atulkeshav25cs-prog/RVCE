@@ -12,6 +12,11 @@ import LiveIncidentMap from "@/components/dashboard/LiveIncidentMap";
 import WeatherWidget from "@/components/dashboard/WeatherWidget";
 import AuthorityAlertsManager from "@/components/dashboard/AuthorityAlertsManager";
 import AuthorityRecordsManager from "@/components/dashboard/AuthorityRecordsManager";
+import AuthorityDashboardTabs from "@/components/dashboard/AuthorityDashboardTabs";
+import AnalyticsOverview from "@/components/dashboard/AnalyticsOverview";
+import IncidentAnalytics from "@/components/dashboard/IncidentAnalytics";
+import ResourceAnalytics from "@/components/dashboard/ResourceAnalytics";
+import TimelineAnalytics from "@/components/dashboard/TimelineAnalytics";
 
 import EmergencyReport from "@/models/EmergencyReport";
 import WomenSafetyReport from "@/models/WomenSafetyReport";
@@ -82,61 +87,74 @@ export default async function AuthorityDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Central Command Feed (8 Columns) */}
-        <div className="lg:col-span-8 space-y-6 flex flex-col">
-          {/* Main Incident Command Table */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm lg:col-span-12">
-            <AuthorityIncidentManager initialReports={allReports.map((r: any) => ({
-              reportId: r.reportId,
-              citizenId: r.citizenId.toString(),
-              citizenName: r.citizenName,
-              emergencyType: r.emergencyType,
-              severity: r.severity || r.priority, // map priority to severity for unified UI
-              status: r.status,
-              createdAt: r.createdAt.toISOString(),
-              location: r.location,
-              description: r.description,
-              contactPhone: r.contactPhone,
-              citizenEmail: r.citizenEmail,
-              trustedContacts: r.trustedContacts,
-              timeline: r.timeline
-            }))} />
-          </div>
+      <AuthorityDashboardTabs 
+        operationsContent={
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Central Command Feed (8 Columns) */}
+            <div className="lg:col-span-8 space-y-6 flex flex-col">
+              {/* Main Incident Command Table */}
+              <div className="bg-white border border-slate-200 rounded-xl shadow-sm lg:col-span-12">
+                <AuthorityIncidentManager initialReports={allReports.map((r: any) => ({
+                  reportId: r.reportId,
+                  citizenId: r.citizenId.toString(),
+                  citizenName: r.citizenName,
+                  emergencyType: r.emergencyType,
+                  severity: r.severity || r.priority, // map priority to severity for unified UI
+                  status: r.status,
+                  createdAt: r.createdAt.toISOString(),
+                  location: r.location,
+                  description: r.description,
+                  contactPhone: r.contactPhone,
+                  citizenEmail: r.citizenEmail,
+                  trustedContacts: r.trustedContacts,
+                  timeline: r.timeline
+                }))} />
+              </div>
 
-          {/* Active Incident Map */}
-          <LiveIncidentMap />
-        </div>
-
-        {/* Right Sidebar: Operations & Resources (4 Columns) */}
-        <div className="lg:col-span-4 space-y-6">
-          
-          <WeatherWidget weather={mockAuthorityData.weatherConditions} />
-          
-          <AuthorityAlertsManager />
-
-          <AuthorityRecordsManager />
-
-          {/* Resource Inventory Summary */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-            <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Resource Utilization Summary</h2>
-              <button className="text-slate-500 hover:text-slate-900 text-xs font-bold transition-colors">Manage All</button>
+              {/* Active Incident Map */}
+              <LiveIncidentMap />
             </div>
-            <div className="space-y-4">
-              <ResourceStatusWidget label="Available" total={resources.length} available={getResourceCount("Available")} deployed={0} colorClass="text-emerald-600" />
-              <ResourceStatusWidget label="Assigned" total={resources.length} available={getResourceCount("Assigned")} deployed={0} colorClass="text-blue-600" />
-              <ResourceStatusWidget label="Dispatched" total={resources.length} available={getResourceCount("Dispatched")} deployed={0} colorClass="text-indigo-600" />
-              <ResourceStatusWidget label="Busy / On Scene" total={resources.length} available={getResourceCount("Busy")} deployed={0} colorClass="text-purple-600" />
-              <ResourceStatusWidget label="Offline" total={resources.length} available={getResourceCount("Offline")} deployed={0} colorClass="text-slate-600" />
+
+            {/* Right Sidebar: Operations & Resources (4 Columns) */}
+            <div className="lg:col-span-4 space-y-6">
+              
+              <WeatherWidget weather={mockAuthorityData.weatherConditions} />
+              
+              <AuthorityAlertsManager />
+
+              <AuthorityRecordsManager />
+
+              {/* Resource Inventory Summary */}
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                  <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Resource Utilization Summary</h2>
+                  <button className="text-slate-500 hover:text-slate-900 text-xs font-bold transition-colors">Manage All</button>
+                </div>
+                <div className="space-y-4">
+                  <ResourceStatusWidget label="Available" total={resources.length} available={getResourceCount("Available")} deployed={0} colorClass="text-emerald-600" />
+                  <ResourceStatusWidget label="Assigned" total={resources.length} available={getResourceCount("Assigned")} deployed={0} colorClass="text-blue-600" />
+                  <ResourceStatusWidget label="Dispatched" total={resources.length} available={getResourceCount("Dispatched")} deployed={0} colorClass="text-indigo-600" />
+                  <ResourceStatusWidget label="Busy / On Scene" total={resources.length} available={getResourceCount("Busy")} deployed={0} colorClass="text-purple-600" />
+                  <ResourceStatusWidget label="Offline" total={resources.length} available={getResourceCount("Offline")} deployed={0} colorClass="text-slate-600" />
+                </div>
+              </div>
+
+              <ActivityFeed activities={[]} />
             </div>
+
           </div>
+        }
+        analyticsContent={
+          <div className="space-y-6">
+            <AnalyticsOverview />
+            <IncidentAnalytics />
+            <ResourceAnalytics />
+            <TimelineAnalytics />
+          </div>
+        }
+      />
 
-          <ActivityFeed activities={mockAuthorityData.recentActivities} />
-        </div>
-
-      </div>
     </DashboardLayout>
   );
 }
