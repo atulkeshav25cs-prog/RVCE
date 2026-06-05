@@ -1,7 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { ShieldAlert, Radio } from "lucide-react";
+import EmergencyAccessModal from "@/components/emergency/EmergencyAccessModal";
 
 export default function Hero() {
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+
   return (
     <section className="relative w-full h-screen min-h-[800px] flex flex-col justify-end pb-32 pt-32 px-6 lg:px-12 bg-slate-900 overflow-hidden">
       {/* Restored exact Hero Image overlay structure */}
@@ -28,15 +35,24 @@ export default function Hero() {
           The centralized authority for immediate crisis response, public safety coordination, and rapid civilian assistance.
         </p>
         
-        <div className="mt-12 flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
-          <Link href="/citizen/login" className="bg-white/95 backdrop-blur-sm text-slate-900 px-10 py-5 text-[12px] font-bold uppercase tracking-[0.1em] hover:bg-white transition-all duration-300 text-center">
-            Request Immediate Help
-          </Link>
-          <Link href="/alerts" className="bg-black/20 backdrop-blur-md text-white px-10 py-5 text-[12px] font-bold uppercase tracking-[0.1em] border border-white/20 hover:bg-white/10 transition-all duration-300 text-center">
-            View Active Alerts
-          </Link>
+        <div className="flex flex-col sm:flex-row gap-4 mt-8">
+            <button 
+              onClick={() => setIsAccessModalOpen(true)}
+              className="px-8 py-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-600/30 flex items-center justify-center space-x-2"
+            >
+              <ShieldAlert className="w-5 h-5" />
+              <span>Request Immediate Help</span>
+            </button>
+            <Link 
+              href="/alerts"
+              className="px-8 py-4 bg-white/10 text-white rounded-xl font-bold hover:bg-white/20 transition-all flex items-center justify-center space-x-2 backdrop-blur-sm"
+            >
+              <Radio className="w-5 h-5" />
+              <span>View Active Alerts</span>
+            </Link>
         </div>
       </div>
+      <EmergencyAccessModal isOpen={isAccessModalOpen} onClose={() => setIsAccessModalOpen(false)} />
     </section>
   );
 }

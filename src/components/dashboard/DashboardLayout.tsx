@@ -1,5 +1,6 @@
 import Sidebar from "./Sidebar";
 import TopHeader from "./TopHeader";
+import GlobalSOSButton from "@/components/emergency/GlobalSOSButton";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -24,6 +25,8 @@ export default function DashboardLayout({ children, role, userName, department }
           </div>
         </main>
       </div>
+
+      {role === "citizen" && <GlobalSOSButton isLoggedIn={true} />}
     </div>
   );
 }

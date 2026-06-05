@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ShieldAlert } from "lucide-react";
 import Logo from "./Logo";
-import AuthModal from "./AuthModal";
+import EmergencyAccessModal from "@/components/emergency/EmergencyAccessModal";
+import GlobalSOSButton from "@/components/emergency/GlobalSOSButton";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,18 +51,17 @@ export default function Navbar() {
         
         <div className="flex items-center">
           <button 
-            onClick={() => setIsAuthModalOpen(true)}
-            className={`px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.1em] transition-all duration-300 ${
-            scrolled 
-              ? 'bg-slate-900/95 backdrop-blur-sm text-white border-none hover:bg-slate-800' 
-              : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white hover:text-slate-900'
-          }`}>
-            Get Help Now
+            onClick={() => setIsAccessModalOpen(true)}
+            className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold text-[11px] uppercase tracking-[0.1em] hover:bg-red-700 transition-all shadow-md flex items-center space-x-2"
+          >
+            <ShieldAlert className="w-4 h-4" />
+            <span>Get Help Now</span>
           </button>
         </div>
       </div>
       
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <EmergencyAccessModal isOpen={isAccessModalOpen} onClose={() => setIsAccessModalOpen(false)} />
+      <GlobalSOSButton isLoggedIn={false} />
     </nav>
   );
 }

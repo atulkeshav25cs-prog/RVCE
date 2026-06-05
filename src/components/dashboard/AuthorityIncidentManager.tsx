@@ -10,11 +10,44 @@ export default function AuthorityIncidentManager({ initialReports }: { initialRe
   const [filter, setFilter] = useState("All");
 
   const filteredReports = useMemo(() => {
-    if (filter === "All") return reports;
-    if (filter === "Critical") return reports.filter(r => r.severity === "Critical");
-    if (filter === "Pending") return reports.filter(r => r.status === "Pending");
-    if (filter === "Resolved") return reports.filter(r => r.status === "Resolved");
-    return reports;
+    let result = reports;
+    if (filter === "Critical") result = reports.filter(r => r.severity === "Critical");
+    if (filter === "Pending") result = reports.filter(r => r.status === "Pending");
+    if (filter === "Resolved") result = reports.filter(r => r.status === "Resolved");
+
+    return result.sort((a, b) => {
+      // 1. Active SOS
+      // 2. Active Women Safety
+      // 3. Critical Reports
+      // 4. High
+      // 5. Medium
+      // 6. Low
+      // 7. Resolved
+      const isAResolved = a.status === "Resolved";
+      const isBResolved = b.status === "Resolved";
+      if (isAResolved !== isBResolved) return isAResolved ? 1 : -1;
+      
+      const isAWomenSafety = a.reportId.startsWith("WS-");
+      const isBWomenSafety = b.reportId.startsWith("WS-");
+
+      const getScore = (r: any, isWS: boolean) => {
+        if (r.isSOS) return 60;
+        if (isWS) return 50;
+        if (r.severity === "Critical") return 40;
+        if (r.severity === "High") return 30;
+        if (r.severity === "Medium") return 20;
+        if (r.severity === "Low") return 10;
+        return 0;
+      };
+
+      const scoreA = getScore(a, isAWomenSafety);
+      const scoreB = getScore(b, isBWomenSafety);
+
+      if (scoreA !== scoreB) return scoreB - scoreA;
+      
+      // Newest first if tied
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
   }, [reports, filter]);
 
   const handleUpdateStatus = async (reportId: string, status: string, notes: string) => {
@@ -119,10 +152,15 @@ export default function AuthorityIncidentManager({ initialReports }: { initialRe
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      {isWomenSafety(report.reportId) && (
-                          <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" title="Women Safety SOS"></div>
+                      {report.isSOS && (
+                          <span className="bg-red-600 text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded animate-pulse shadow-sm shadow-red-500/50">
+                            SOS
+                          </span>
                       )}
-                      <span className={`font-mono font-bold ${isWomenSafety(report.reportId) ? 'text-red-700' : 'text-slate-900'}`}>{report.reportId}</span>
+                      {isWomenSafety(report.reportId) && !report.isSOS && (
+                          <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" title="Women Safety Incident"></div>
+                      )}
+                      <span className={`font-mono font-bold ${(report.isSOS || isWomenSafety(report.reportId)) ? 'text-red-700' : 'text-slate-900'}`}>{report.reportId}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-700">{report.citizenName}</td>

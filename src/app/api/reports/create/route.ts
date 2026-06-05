@@ -18,17 +18,17 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { emergencyType, title, description, location, severity, contactPhone, emergencyCategory, latitude, longitude } = body;
+    const { emergencyType, title, description, location, severity, contactPhone, emergencyCategory, latitude, longitude, isSOS } = body;
 
     if (!emergencyType || !title || !description || !location) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Generate Report ID: REP-YYYYMMDD-XXXX
+    // Generate Report ID: REP-YYYYMMDD-XXXX or SOS-YYYYMMDD-XXXX
     const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
-    const prefix = `REP-${dateStr}-`;
+    const prefix = isSOS ? `SOS-${dateStr}-` : `REP-${dateStr}-`;
     
-    // Find highest sequence number for today
+    // Find highest sequence number for today with the same prefix
     const lastReport = await EmergencyReport.findOne({ reportId: { $regex: `^${prefix}` } })
       .sort({ reportId: -1 })
       .select("reportId");
@@ -53,7 +53,8 @@ export async function POST(req: Request) {
       location,
       latitude,
       longitude,
-      severity: severity || "Medium",
+      severity: isSOS ? "Critical" : (severity || "Medium"),
+      isSOS: isSOS || false,
       status: "Pending"
     });
 

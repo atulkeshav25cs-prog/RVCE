@@ -13,6 +13,7 @@ const EmergencyReportSchema = new mongoose.Schema({
   location: { type: String, required: true },
   latitude: { type: Number, required: false },
   longitude: { type: Number, required: false },
+  isSOS: { type: Boolean, default: false },
   severity: { type: String, enum: ["Low", "Medium", "High", "Critical"], default: "Medium" },
   status: { type: String, enum: ["Pending", "Acknowledged", "Dispatched", "In Progress", "Resolved"], default: "Pending" },
   assignedAuthority: { type: mongoose.Schema.Types.ObjectId, ref: "Authority" },

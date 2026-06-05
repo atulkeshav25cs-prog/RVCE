@@ -120,6 +120,44 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* SOS EMERGENCY DISPATCH SUMMARY */}
+        {report.isSOS && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <AlertTriangle className="w-24 h-24 text-red-600" />
+            </div>
+            <h3 className="text-sm font-black text-red-700 uppercase tracking-wider flex items-center mb-4 relative z-10">
+              <AlertTriangle className="w-5 h-5 mr-2 animate-pulse" />
+              Emergency Dispatch Summary
+            </h3>
+            <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm relative z-10">
+              <div>
+                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Citizen Name</p>
+                <p className="font-bold text-slate-900">{report.citizenName}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Contact</p>
+                <p className="font-bold text-slate-900">{report.contactPhone || report.citizenEmail}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Incident Type</p>
+                <p className="font-bold text-slate-900">{report.emergencyType}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Trigger Time</p>
+                <p className="font-bold text-slate-900">{new Date(report.createdAt).toLocaleTimeString()}</p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Location</p>
+                <p className="font-bold text-slate-900 truncate" title={report.location}>{report.location}</p>
+                {report.latitude && report.longitude && (
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">{report.latitude}, {report.longitude}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="px-2.5 py-1 text-xs font-bold rounded-md bg-slate-100 text-slate-700">{report.emergencyType}</span>
@@ -229,6 +267,23 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
           {report.status !== "Resolved" && (
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
               <label className="block text-xs font-semibold text-slate-600 mb-2">Dispatch New Resource</label>
+              
+              {report.isSOS && (
+                <div className="mb-4 bg-amber-50 border border-amber-200 rounded p-3">
+                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider mb-1">Recommended Units</p>
+                  <p className="text-xs text-amber-900 font-medium">
+                    {(() => {
+                      if (report.emergencyType.includes("Fire")) return "Fire Truck, Medical Team";
+                      if (report.emergencyType.includes("Medical")) return "Ambulance, Medical Team";
+                      if (report.emergencyType.includes("Police") || report.emergencyType.includes("Security")) return "Police Unit";
+                      if (report.emergencyType.includes("Flood")) return "Rescue Team, Disaster Response Team";
+                      if (report.emergencyType.includes("Women")) return "Police Unit, Medical Team";
+                      return "Police Unit, Medical Team";
+                    })()}
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-3">
                 <select 
                   value={selectedResourceId}
