@@ -34,7 +34,7 @@ export default function DepartmentsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 py-20 px-6">
+    <div className="min-h-screen bg-slate-50 py-10 px-6">
       <div className="max-w-5xl mx-auto space-y-12">
         
         <div className="text-center space-y-4">

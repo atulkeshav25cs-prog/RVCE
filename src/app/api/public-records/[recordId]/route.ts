@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import PublicRecord from "@/models/PublicRecord";
 
-export async function GET(req: Request, { params }: any) {
+export async function GET(req: Request, { params }: { params: Promise<{ recordId: string }> }) {
   try {
     await dbConnect();
-    const { recordId } = params;
+    const { recordId } = await params;
 
     const record = await PublicRecord.findOne({ recordId }).lean();
     if (!record) {

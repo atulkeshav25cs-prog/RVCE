@@ -16,27 +16,8 @@ export default async function PublicRecordsArchive() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans selection:bg-indigo-500 selection:text-white pb-20">
       
-      {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-                <Database className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-white tracking-tight text-lg">National Emergency Authority</span>
-            </Link>
-            <div className="hidden md:flex space-x-8">
-              <Link href="/" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Home</Link>
-              <Link href="/citizen/login" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Citizen Portal</Link>
-              <Link href="/authority/login" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Authority Portal</Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
-      <div className="bg-slate-900 pt-16 pb-24 border-b border-slate-800 relative overflow-hidden">
+      <div className="bg-slate-900 pt-32 pb-24 border-b border-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-500/10 to-transparent"></div>
         

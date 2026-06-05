@@ -8,28 +8,18 @@ export const dynamic = "force-dynamic";
 export default async function PublicAlertsPage() {
   await dbConnect();
   
-  // Only fetch active alerts for the public
-  const alerts = await Alert.find({ status: "Active" }).sort({ createdAt: -1 }).lean();
+  // Only fetch active alerts for the public that have not expired
+  const now = new Date();
+  const alerts = await Alert.find({ 
+    status: "Active",
+    expiresAt: { $gt: now }
+  }).sort({ createdAt: -1 }).lean();
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans selection:bg-amber-500 selection:text-white pb-20">
       
-      {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-                <Radio className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-white tracking-tight text-lg">National Emergency Authority</span>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Hero */}
-      <div className="bg-slate-900 pt-16 pb-24 border-b border-slate-800 relative overflow-hidden">
+      <div className="bg-slate-900 pt-32 pb-24 border-b border-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber-500/10 to-transparent"></div>
         
@@ -79,13 +69,13 @@ export default async function PublicAlertsPage() {
                   
                   <h3 className="text-2xl font-black text-slate-900 mb-3">{alert.title}</h3>
                   <p className="text-slate-700 text-lg mb-6 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    {alert.message}
+                    {alert.description}
                   </p>
                   
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm font-bold text-slate-600 uppercase tracking-wider">
                     <div className="flex items-center">
                       <MapPin className="w-5 h-5 mr-2 text-slate-400" />
-                      {alert.targetAudience}
+                      {alert.targetArea}
                     </div>
                   </div>
                 </div>

@@ -49,19 +49,6 @@ export default function DirectivesPage() {
 
   return (
     <div className="min-h-screen bg-[#F4F5F7] font-sans">
-      {/* Standalone Top Navigation */}
-      <div className="bg-white border-b border-slate-200 py-3 px-6 lg:px-12 flex justify-between items-center shadow-sm">
-        <div className="flex space-x-6 text-sm font-bold uppercase tracking-wider text-slate-700">
-          <Link href="/directives" className="text-[#003366] hover:text-[#002244]">Directives</Link>
-          <Link href="/departments" className="hover:text-[#003366]">Departments</Link>
-          <Link href="/public-records" className="hover:text-[#003366]">Public Records</Link>
-          <Link href="/authority/login" className="hover:text-[#003366]">Authority Access</Link>
-        </div>
-        <Link href="/" className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 font-bold text-[11px] uppercase tracking-widest shadow-sm rounded-sm">
-          Get Help Now
-        </Link>
-      </div>
-
       {/* Official Government Header Style */}
       <div className="bg-[#003366] text-white py-10 border-b-4 border-amber-500">
         <div className="max-w-7xl mx-auto px-6 text-center">

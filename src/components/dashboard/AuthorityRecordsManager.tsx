@@ -92,20 +92,20 @@ export default function AuthorityRecordsManager() {
               {eligible.map(inc => {
                 const isWS = inc.reportId.startsWith("WS-");
                 return (
-                  <div key={inc.reportId} className="p-4 bg-white border border-slate-200 shadow-sm rounded-lg flex justify-between items-center">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
+                  <div key={inc.reportId} className="p-4 bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+                    <div className="w-full xl:w-auto overflow-hidden">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{inc.reportId}</span>
                         {isWS && <span className="text-xs font-bold text-pink-700 bg-pink-100 px-2 py-0.5 rounded border border-pink-200 flex items-center"><ShieldAlert className="w-3 h-3 mr-1" /> Women Safety</span>}
-                        <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded border border-green-200 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Resolved</span>
+                        <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded border border-green-200 flex items-center shrink-0"><CheckCircle className="w-3 h-3 mr-1" /> Resolved</span>
                       </div>
-                      <h4 className="text-sm font-bold text-slate-800">{isWS ? "Women Safety Incident" : `${inc.emergencyType} Emergency`}</h4>
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-1">{inc.description}</p>
+                      <h4 className="text-sm font-bold text-slate-800 break-words">{isWS ? "Women Safety Incident" : `${inc.emergencyType} Emergency`}</h4>
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-1 break-words">{inc.description}</p>
                     </div>
                     <button 
                       onClick={() => handlePublish(inc.reportId)}
                       disabled={publishing === inc.reportId}
-                      className="ml-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm transition-colors shrink-0 flex items-center"
+                      className="w-full xl:w-auto xl:ml-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm transition-colors shrink-0 flex items-center justify-center"
                     >
                       {publishing === inc.reportId ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Archive className="w-3 h-3 mr-1" />}
                       Publish to Archive

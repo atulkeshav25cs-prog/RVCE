@@ -103,9 +103,9 @@ export default async function AuthorityDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Central Command Feed (8 Columns) */}
-            <div className="lg:col-span-8 space-y-6 flex flex-col">
+            <div className="lg:col-span-8 flex flex-col space-y-6 h-[calc(100vh-12rem)] min-h-[800px]">
               {/* Main Incident Command Table */}
-              <div className="bg-white border border-slate-200 rounded-xl shadow-sm lg:col-span-12">
+              <div className="bg-white border border-slate-200 rounded-xl shadow-sm lg:col-span-12 flex-1 overflow-hidden flex flex-col">
                 <AuthorityIncidentManager initialReports={allReports.map((r: any) => ({
                   reportId: r.reportId,
                   citizenId: r.citizenId ? r.citizenId.toString() : "guest",
@@ -131,11 +131,13 @@ export default async function AuthorityDashboard() {
               </div>
 
               {/* Active Incident Map */}
-              <LiveIncidentMap />
+              <div className="flex-1 rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                <LiveIncidentMap />
+              </div>
             </div>
 
             {/* Right Sidebar: Operations & Resources (4 Columns) */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-4 flex flex-col space-y-6 h-[calc(100vh-12rem)] min-h-[800px] overflow-y-auto pr-2 pb-6 custom-scrollbar">
               
               <WeatherWidget weather={mockAuthorityData.weatherConditions} />
               

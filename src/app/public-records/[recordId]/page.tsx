@@ -9,8 +9,9 @@ async function getRecord(recordId: string) {
   return data.record;
 }
 
-export default async function PublicRecordDetail({ params }: { params: { recordId: string } }) {
-  const record = await getRecord(params.recordId);
+export default async function PublicRecordDetail({ params }: { params: Promise<{ recordId: string }> }) {
+  const { recordId } = await params;
+  const record = await getRecord(recordId);
   if (!record) {
     notFound();
   }
@@ -20,25 +21,8 @@ export default async function PublicRecordDetail({ params }: { params: { recordI
   return (
     <div className="min-h-screen bg-slate-50 font-sans selection:bg-indigo-500 selection:text-white pb-20">
       
-      {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-                <Database className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-white tracking-tight text-lg">National Emergency Authority</span>
-            </Link>
-            <Link href="/public-records" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors flex items-center">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Archive
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
         
         {/* Breadcrumb & Meta */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
