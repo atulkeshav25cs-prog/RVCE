@@ -20,6 +20,7 @@ import TimelineAnalytics from "@/components/dashboard/TimelineAnalytics";
 
 import EmergencyReport from "@/models/EmergencyReport";
 import WomenSafetyReport from "@/models/WomenSafetyReport";
+import GuestSOS from "@/models/GuestSOS";
 import Resource from "@/models/Resource";
 import { mockAuthorityData } from "@/lib/mockData";
 
@@ -34,8 +35,18 @@ export default async function AuthorityDashboard() {
   
   const standardReports = await EmergencyReport.find({}).lean();
   const wsReports = await WomenSafetyReport.find({}).lean();
+  const guestReports = await GuestSOS.find({}).lean();
 
-  const allReports = [...standardReports, ...wsReports];
+  const formattedGuestReports = guestReports.map((r: any) => ({
+    ...r,
+    reportId: r.referenceId,
+    citizenName: "Anonymous Citizen",
+    severity: "Critical",
+    isSOS: true,
+    isGuestSOS: true
+  }));
+
+  const allReports = [...standardReports, ...wsReports, ...formattedGuestReports];
 
   // Sorting logic: 1. WS Critical, 2. REP Critical, 3. High, 4. Medium, 5. Low
   const priorityWeight = (r: any) => {
@@ -108,7 +119,9 @@ export default async function AuthorityDashboard() {
                   contactPhone: r.contactPhone,
                   citizenEmail: r.citizenEmail,
                   trustedContacts: r.trustedContacts,
-                  timeline: r.timeline
+                  timeline: r.timeline,
+                  isSOS: r.isSOS,
+                  isGuestSOS: r.isGuestSOS
                 }))} />
               </div>
 

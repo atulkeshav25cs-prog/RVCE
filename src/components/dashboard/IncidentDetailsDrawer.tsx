@@ -124,31 +124,31 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
         {report.isSOS && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <AlertTriangle className="w-24 h-24 text-red-600" />
+              <AlertTriangle className={`w-24 h-24 ${report.isGuestSOS ? 'text-amber-600' : 'text-red-600'}`} />
             </div>
-            <h3 className="text-sm font-black text-red-700 uppercase tracking-wider flex items-center mb-4 relative z-10">
+            <h3 className={`text-sm font-black ${report.isGuestSOS ? 'text-amber-700' : 'text-red-700'} uppercase tracking-wider flex items-center mb-4 relative z-10`}>
               <AlertTriangle className="w-5 h-5 mr-2 animate-pulse" />
-              Emergency Dispatch Summary
+              {report.isGuestSOS ? 'Guest Emergency Dispatch Summary' : 'Emergency Dispatch Summary'}
             </h3>
             <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm relative z-10">
               <div>
-                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Citizen Name</p>
-                <p className="font-bold text-slate-900">{report.citizenName}</p>
+                <p className={`text-[10px] font-bold ${report.isGuestSOS ? 'text-amber-600' : 'text-red-500'} uppercase tracking-wider mb-0.5`}>Reporter Name</p>
+                <p className="font-bold text-slate-900">{report.citizenName || "Anonymous Citizen"}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Contact</p>
-                <p className="font-bold text-slate-900">{report.contactPhone || report.citizenEmail}</p>
+                <p className={`text-[10px] font-bold ${report.isGuestSOS ? 'text-amber-600' : 'text-red-500'} uppercase tracking-wider mb-0.5`}>Contact</p>
+                <p className="font-bold text-slate-900">{report.contactPhone || report.citizenEmail || "No contact provided"}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Incident Type</p>
+                <p className={`text-[10px] font-bold ${report.isGuestSOS ? 'text-amber-600' : 'text-red-500'} uppercase tracking-wider mb-0.5`}>Incident Type</p>
                 <p className="font-bold text-slate-900">{report.emergencyType}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Trigger Time</p>
+                <p className={`text-[10px] font-bold ${report.isGuestSOS ? 'text-amber-600' : 'text-red-500'} uppercase tracking-wider mb-0.5`}>Trigger Time</p>
                 <p className="font-bold text-slate-900">{new Date(report.createdAt).toLocaleTimeString()}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Location</p>
+                <p className={`text-[10px] font-bold ${report.isGuestSOS ? 'text-amber-600' : 'text-red-500'} uppercase tracking-wider mb-0.5`}>Location</p>
                 <p className="font-bold text-slate-900 truncate" title={report.location}>{report.location}</p>
                 {report.latitude && report.longitude && (
                   <p className="text-xs text-slate-500 font-mono mt-0.5">{report.latitude}, {report.longitude}</p>
@@ -179,8 +179,8 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
             <User className="w-4 h-4 text-slate-400 mt-0.5 mr-3 flex-shrink-0" />
             <div>
               <p className="text-xs font-bold text-slate-500 uppercase">Reporter</p>
-              <p className="text-sm font-medium text-slate-900">{report.citizenName}</p>
-              <p className="text-xs text-slate-500">{report.contactPhone || report.citizenEmail}</p>
+              <p className="text-sm font-medium text-slate-900">{report.citizenName || "Anonymous Citizen"}</p>
+              <p className="text-xs text-slate-500">{report.contactPhone || report.citizenEmail || "No contact provided"}</p>
             </div>
           </div>
         </div>

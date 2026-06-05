@@ -53,7 +53,12 @@ export default function AuthorityIncidentManager({ initialReports }: { initialRe
   const handleUpdateStatus = async (reportId: string, status: string, notes: string) => {
     try {
       const isWS = reportId.startsWith("WS-");
-      const endpoint = isWS ? "/api/women-safety/update-status" : "/api/reports/update-status";
+      const isGSOS = reportId.startsWith("GSOS-");
+      
+      let endpoint = "/api/reports/update-status";
+      if (isGSOS) endpoint = "/api/guest-sos/update-status";
+      else if (isWS) endpoint = "/api/women-safety/update-status";
+
       const body = isWS 
         ? { reportId, status, notes } 
         : { reportId, status, resolutionNotes: notes };
@@ -152,7 +157,12 @@ export default function AuthorityIncidentManager({ initialReports }: { initialRe
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      {report.isSOS && (
+                      {report.isGuestSOS && (
+                          <span className="bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow-sm shadow-amber-500/50">
+                            GUEST SOS
+                          </span>
+                      )}
+                      {report.isSOS && !report.isGuestSOS && (
                           <span className="bg-red-600 text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded animate-pulse shadow-sm shadow-red-500/50">
                             SOS
                           </span>

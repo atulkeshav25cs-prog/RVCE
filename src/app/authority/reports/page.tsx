@@ -10,6 +10,7 @@ import LiveIncidentMap from "@/components/dashboard/LiveIncidentMap";
 
 import EmergencyReport from "@/models/EmergencyReport";
 import WomenSafetyReport from "@/models/WomenSafetyReport";
+import GuestSOS from "@/models/GuestSOS";
 
 export default async function AuthorityReportsPage() {
   const session = await getSession();
@@ -22,7 +23,18 @@ export default async function AuthorityReportsPage() {
   
   const standardReports = await EmergencyReport.find({}).lean();
   const wsReports = await WomenSafetyReport.find({}).lean();
-  const allReports = [...standardReports, ...wsReports];
+  const guestReports = await GuestSOS.find({}).lean();
+  
+  const formattedGuestReports = guestReports.map((r: any) => ({
+    ...r,
+    reportId: r.referenceId, // normalize ID field
+    citizenName: "Anonymous Citizen", // normalize citizen name
+    severity: "Critical",
+    isSOS: true,
+    isGuestSOS: true
+  }));
+
+  const allReports = [...standardReports, ...wsReports, ...formattedGuestReports];
 
   const priorityWeight = (r: any) => {
     if (r.reportId.startsWith("WS-")) return 5;
@@ -72,7 +84,9 @@ export default async function AuthorityReportsPage() {
             contactPhone: r.contactPhone,
             citizenEmail: r.citizenEmail,
             trustedContacts: r.trustedContacts,
-            timeline: r.timeline
+            timeline: r.timeline,
+            isSOS: r.isSOS,
+            isGuestSOS: r.isGuestSOS
           }))} />
         </div>
         

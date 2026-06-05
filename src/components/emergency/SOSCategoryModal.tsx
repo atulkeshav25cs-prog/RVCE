@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { X, Flame, HeartPulse, ShieldAlert, Droplets, AlertTriangle, AlertCircle, MapPin, Loader2, CheckCircle } from "lucide-react";
+import { X, Flame, HeartPulse, ShieldAlert, Droplets, AlertTriangle, AlertCircle, MapPin, Loader2, CheckCircle, Phone } from "lucide-react";
+import Link from "next/link";
 
 interface SOSCategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isGuest?: boolean;
 }
 
 const CATEGORIES = [
@@ -17,9 +19,10 @@ const CATEGORIES = [
   { id: "General", title: "General SOS", icon: AlertTriangle, color: "text-slate-600", bg: "bg-slate-50", border: "border-slate-200", hover: "hover:border-slate-400 hover:bg-slate-50" }
 ];
 
-export default function SOSCategoryModal({ isOpen, onClose }: SOSCategoryModalProps) {
+export default function SOSCategoryModal({ isOpen, onClose, isGuest = false }: SOSCategoryModalProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedReport, setSubmittedReport] = useState<any>(null);
   const [locationStatus, setLocationStatus] = useState<"pending" | "acquired" | "denied">("pending");
@@ -54,7 +57,8 @@ export default function SOSCategoryModal({ isOpen, onClose }: SOSCategoryModalPr
       isSOS: true,
       emergencyType: selectedCategory === "WomenSafety" ? "Women Safety Incident" : selectedCategory,
       title: `${selectedCategory} SOS`,
-      description: note.trim() || `Instant SOS Dispatch triggered for ${selectedCategory}.`,
+      description: note.trim(), // Optional description
+      contactNumber: contactNumber.trim(), // Optional contact
       location: locationStatus === "acquired" ? "GPS Automatically Acquired" : manualLocation,
       latitude: coords?.lat,
       longitude: coords?.lng,
@@ -63,7 +67,13 @@ export default function SOSCategoryModal({ isOpen, onClose }: SOSCategoryModalPr
     };
 
     try {
-      const endpoint = selectedCategory === "WomenSafety" ? "/api/women-safety/create" : "/api/reports/create";
+      let endpoint = "/api/reports/create";
+      if (isGuest) {
+        endpoint = "/api/guest-sos/create";
+      } else if (selectedCategory === "WomenSafety") {
+        endpoint = "/api/women-safety/create";
+      }
+      
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -123,7 +133,7 @@ export default function SOSCategoryModal({ isOpen, onClose }: SOSCategoryModalPr
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left space-y-3 mb-6">
                 <div className="flex justify-between">
                   <span className="text-sm font-medium text-slate-500">Reference:</span>
-                  <span className="text-sm font-bold font-mono text-slate-900">{submittedReport.reportId || submittedReport.sosId}</span>
+                  <span className="text-sm font-bold font-mono text-slate-900">{submittedReport.referenceId || submittedReport.reportId || submittedReport.sosId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm font-medium text-slate-500">Status:</span>
@@ -137,12 +147,30 @@ export default function SOSCategoryModal({ isOpen, onClose }: SOSCategoryModalPr
                 </div>
               </div>
 
-              <button 
-                onClick={handleReset}
-                className="w-full bg-slate-900 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-800 transition-colors"
-              >
-                Close & Return
-              </button>
+              {isGuest ? (
+                <div className="space-y-3">
+                  <Link 
+                    href="/citizen/login"
+                    onClick={onClose}
+                    className="w-full flex items-center justify-center bg-slate-900 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-800 transition-colors"
+                  >
+                    Provide More Details (Login / Signup)
+                  </Link>
+                  <button 
+                    onClick={handleReset}
+                    className="w-full text-slate-500 font-bold py-3 px-4 hover:text-slate-700 transition-colors text-sm"
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={handleReset}
+                  className="w-full bg-slate-900 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-800 transition-colors"
+                >
+                  Close & Return
+                </button>
+              )}
             </div>
           ) : !selectedCategory ? (
             <>
@@ -207,6 +235,25 @@ export default function SOSCategoryModal({ isOpen, onClose }: SOSCategoryModalPr
                 />
                 <p className="text-right text-xs text-slate-400 mt-1">{note.length}/200</p>
               </div>
+
+              {isGuest && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Contact Number <span className="text-slate-400 font-normal">(Optional)</span>
+                  </label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+                    <input
+                      type="tel"
+                      value={contactNumber}
+                      onChange={(e) => setContactNumber(e.target.value)}
+                      placeholder="e.g., +1 234 567 8900"
+                      className="w-full border border-slate-200 rounded-xl py-3 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2">If provided, authorities may contact you directly.</p>
+                </div>
+              )}
 
               {locationStatus === "denied" && (
                 <div className="bg-red-50 border border-red-100 rounded-xl p-4">

@@ -11,14 +11,9 @@ interface GlobalSOSButtonProps {
 
 export default function GlobalSOSButton({ isLoggedIn = false }: GlobalSOSButtonProps) {
   const [isSOSOpen, setIsSOSOpen] = useState(false);
-  const [isAccessOpen, setIsAccessOpen] = useState(false);
 
   const handleClick = () => {
-    if (isLoggedIn) {
-      setIsSOSOpen(true);
-    } else {
-      setIsAccessOpen(true);
-    }
+    setIsSOSOpen(true);
   };
 
   return (
@@ -31,8 +26,7 @@ export default function GlobalSOSButton({ isLoggedIn = false }: GlobalSOSButtonP
         <AlertTriangle className="w-8 h-8" />
       </button>
 
-      <SOSCategoryModal isOpen={isSOSOpen} onClose={() => setIsSOSOpen(false)} />
-      <EmergencyAccessModal isOpen={isAccessOpen} onClose={() => setIsAccessOpen(false)} />
+      <SOSCategoryModal isOpen={isSOSOpen} onClose={() => setIsSOSOpen(false)} isGuest={!isLoggedIn} />
     </>
   );
 }
