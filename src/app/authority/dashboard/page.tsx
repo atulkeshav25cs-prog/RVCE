@@ -5,13 +5,13 @@ import Authority from "@/models/Authority";
 import { ShieldAlert } from "lucide-react";
 
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import RecentReportsTable from "@/components/dashboard/RecentReportsTable";
+import AuthorityIncidentManager from "@/components/dashboard/AuthorityIncidentManager";
 import ResourceStatusWidget from "@/components/dashboard/ResourceStatusWidget";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import IncidentMap from "@/components/dashboard/IncidentMap";
 import WeatherWidget from "@/components/dashboard/WeatherWidget";
 
-import { mockAuthorityData } from "@/lib/mockData";
+import EmergencyReport from "@/models/EmergencyReport";
 
 export default async function AuthorityDashboard() {
   const session = await getSession();
@@ -21,7 +21,8 @@ export default async function AuthorityDashboard() {
 
   await dbConnect();
   const user = await Authority.findById(session.id);
-  
+  const reports = await EmergencyReport.find({}).sort({ createdAt: -1 }).lean();
+
   return (
     <DashboardLayout 
       role="authority" 
@@ -56,13 +57,7 @@ export default async function AuthorityDashboard() {
         <div className="lg:col-span-8 space-y-6 flex flex-col">
           {/* Main Incident Command Table */}
           <div className="flex-1">
-            <RecentReportsTable reports={mockAuthorityData.activeIncidents.map(inc => ({
-              id: inc.id,
-              type: inc.type,
-              status: inc.status,
-              priority: inc.severity,
-              time: inc.time
-            }))} />
+            <AuthorityIncidentManager initialReports={JSON.parse(JSON.stringify(reports))} />
           </div>
 
           {/* Active Incident Map */}

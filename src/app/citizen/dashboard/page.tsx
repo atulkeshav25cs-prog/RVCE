@@ -6,10 +6,10 @@ import { AlertOctagon, Flame, HeartPulse, Droplets, ShieldAlert } from "lucide-r
 
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import SafetyStatusBanner from "@/components/dashboard/SafetyStatusBanner";
-import EmergencyActionCard from "@/components/dashboard/EmergencyActionCard";
 import AdvisoryNotice from "@/components/dashboard/AdvisoryNotice";
 import ProfileCard from "@/components/dashboard/ProfileCard";
-import RecentReportsTable from "@/components/dashboard/RecentReportsTable";
+import CitizenDashboardClient from "@/components/dashboard/CitizenDashboardClient";
+import EmergencyReport from "@/models/EmergencyReport";
 
 import { mockCitizenData } from "@/lib/mockData";
 
@@ -21,6 +21,7 @@ export default async function CitizenDashboard() {
 
   await dbConnect();
   const user = await Citizen.findById(session.id);
+  const reports = await EmergencyReport.find({ citizenId: session.id }).sort({ createdAt: -1 });
   
   return (
     <DashboardLayout 
@@ -43,53 +44,13 @@ export default async function CitizenDashboard() {
         
         {/* Main Content (Left 8 Columns) */}
         <div className="lg:col-span-8 space-y-6">
-          
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">
-              Emergency Quick Actions
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
-                <EmergencyActionCard 
-                  title="SOS Alert" 
-                  description="Instantly broadcast your location to all nearby emergency responders."
-                  icon={AlertOctagon}
-                  colorClass="text-red-600"
-                  bgHoverClass="hover:bg-red-50"
-                />
-              </div>
-              <EmergencyActionCard 
-                title="Medical Emergency" 
-                description="Request an ambulance or medical assistance."
-                icon={HeartPulse}
-                colorClass="text-blue-600"
-                bgHoverClass="hover:bg-blue-50"
-              />
-              <EmergencyActionCard 
-                title="Fire Emergency" 
-                description="Report a fire and request fire department."
-                icon={Flame}
-                colorClass="text-orange-600"
-                bgHoverClass="hover:bg-orange-50"
-              />
-              <EmergencyActionCard 
-                title="Flood / Rescue" 
-                description="Request water rescue or report severe flooding."
-                icon={Droplets}
-                colorClass="text-cyan-600"
-                bgHoverClass="hover:bg-cyan-50"
-              />
-              <EmergencyActionCard 
-                title="Women Safety" 
-                description="Trigger priority police dispatch for women in distress."
-                icon={ShieldAlert}
-                colorClass="text-purple-600"
-                bgHoverClass="hover:bg-purple-50"
-              />
-            </div>
-          </div>
-
-          <RecentReportsTable reports={mockCitizenData.reportHistory as any} />
+          <CitizenDashboardClient initialReports={reports.map(r => ({
+            id: r.reportId,
+            type: r.emergencyType,
+            status: r.status,
+            priority: r.severity,
+            time: new Date(r.createdAt).toLocaleString()
+          }))} />
         </div>
 
         {/* Sidebar (Right 4 Columns) */}
