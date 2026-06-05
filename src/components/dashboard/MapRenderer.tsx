@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -56,9 +56,22 @@ interface MapRendererProps {
   center?: [number, number];
   zoom?: number;
   hideResources?: boolean;
+  bounds?: [number, number][] | null;
 }
 
-export default function MapRenderer({ incidents, resources, onMarkerClick, center = [28.6139, 77.2090], zoom = 11, hideResources = false }: MapRendererProps) {
+function MapUpdater({ center, zoom, bounds }: { center: [number, number]; zoom: number; bounds?: [number, number][] | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (bounds && bounds.length > 0) {
+      map.fitBounds(bounds as L.LatLngBoundsExpression, { padding: [50, 50], maxZoom: 15 });
+    } else {
+      map.setView(center, zoom);
+    }
+  }, [center, zoom, bounds, map]);
+  return null;
+}
+
+export default function MapRenderer({ incidents, resources, onMarkerClick, center = [20.5937, 78.9629], zoom = 5, hideResources = false, bounds = null }: MapRendererProps) {
   
   return (
     <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%", zIndex: 1 }}>
@@ -66,6 +79,7 @@ export default function MapRenderer({ incidents, resources, onMarkerClick, cente
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <MapUpdater center={center} zoom={zoom} bounds={bounds} />
       
       {/* Incidents Layer */}
       {incidents.map((inc) => {

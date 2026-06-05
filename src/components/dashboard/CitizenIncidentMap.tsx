@@ -20,6 +20,8 @@ export default function CitizenIncidentMap() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
+  const [gpsLocation, setGpsLocation] = useState<[number, number] | null>(null);
+  const [gpsDenied, setGpsDenied] = useState(false);
 
   const fetchMapData = async () => {
     try {
@@ -38,11 +40,33 @@ export default function CitizenIncidentMap() {
 
   useEffect(() => {
     fetchMapData();
+    
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => setGpsLocation([position.coords.latitude, position.coords.longitude]),
+        () => setGpsDenied(true)
+      );
+    } else {
+      setGpsDenied(true);
+    }
   }, []);
 
-  if (error || (incidents.length === 0 && !loading)) {
-    // If no incidents with coordinates, don't show the map layer at all to save space
+  if (error || (incidents.length === 0 && !loading && !gpsLocation)) {
+    // If no incidents and no GPS, don't show the map layer at all to save space
     return null;
+  }
+
+  let mapCenter: [number, number] = [20.5937, 78.9629];
+  let mapZoom = 5;
+  let showDeniedMessage = false;
+
+  if (gpsLocation) {
+    mapCenter = gpsLocation;
+    mapZoom = 14;
+  } else if (gpsDenied && incidents.length > 0 && incidents[0].latitude && incidents[0].longitude) {
+    mapCenter = [incidents[0].latitude, incidents[0].longitude];
+    mapZoom = 12;
+    showDeniedMessage = true;
   }
 
   return (
@@ -53,6 +77,13 @@ export default function CitizenIncidentMap() {
         <h2 className="text-white font-bold text-sm">Your Active Locations</h2>
         {loading && <Loader2 className="w-3 h-3 ml-2 text-slate-400 animate-spin" />}
       </div>
+      
+      {showDeniedMessage && (
+        <div className="bg-amber-50 text-amber-800 text-xs px-3 py-1.5 border-b border-amber-200 flex items-center shrink-0">
+          <MapPin className="w-3 h-3 mr-1 shrink-0" />
+          Location permission denied. Showing your latest reported incident.
+        </div>
+      )}
 
       <div className="flex-1 relative z-0">
         <MapRenderer 
@@ -60,7 +91,8 @@ export default function CitizenIncidentMap() {
           resources={[]}
           hideResources={true}
           onMarkerClick={(inc) => setSelectedIncident(inc)}
-          zoom={12}
+          center={mapCenter}
+          zoom={mapZoom}
         />
       </div>
 

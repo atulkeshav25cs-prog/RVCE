@@ -21,6 +21,7 @@ export default function LiveIncidentMap() {
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [browserLocation, setBrowserLocation] = useState<[number, number] | null>(null);
   
   const [filterType, setFilterType] = useState("All"); // All, ER, WS, Resources
   const [filterSeverity, setFilterSeverity] = useState("All");
@@ -52,6 +53,17 @@ export default function LiveIncidentMap() {
   useEffect(() => {
     fetchMapData();
     const interval = setInterval(fetchMapData, 30000); // 30s auto-refresh
+    
+    // Request Authority Browser Location
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setBrowserLocation([position.coords.latitude, position.coords.longitude]);
+        },
+        () => console.warn("Authority GPS denied.")
+      );
+    }
+    
     return () => clearInterval(interval);
   }, []);
 
@@ -65,6 +77,34 @@ export default function LiveIncidentMap() {
     
     return true;
   });
+
+  const getPriorityBounds = (): [number, number][] | null => {
+    const getCoords = (items: any[]) => {
+      const coords = items.filter(i => i.latitude && i.longitude).map(i => [i.latitude, i.longitude] as [number, number]);
+      return coords.length > 0 ? coords : null;
+    };
+
+    const gSOS = filteredIncidents.filter(i => i.isGuestSOS && i.status !== "Resolved");
+    if (gSOS.length > 0) return getCoords(gSOS);
+
+    const wsSOS = filteredIncidents.filter(i => i.isWomenSafety && i.status !== "Resolved");
+    if (wsSOS.length > 0) return getCoords(wsSOS);
+
+    const critical = filteredIncidents.filter(i => i.severity === "Critical" && i.status !== "Resolved");
+    if (critical.length > 0) return getCoords(critical);
+
+    const other = filteredIncidents.filter(i => i.status !== "Resolved");
+    if (other.length > 0) return getCoords(other);
+
+    const activeRes = resources.filter(r => r.status !== "Offline");
+    if (activeRes.length > 0 && filterType === "Resources" || filterType === "All") return getCoords(activeRes);
+
+    return null;
+  };
+
+  const dynamicBounds = getPriorityBounds();
+  const defaultCenter = browserLocation || [20.5937, 78.9629];
+  const defaultZoom = browserLocation ? 12 : 5;
 
   if (error) {
     return (
@@ -137,9 +177,9 @@ export default function LiveIncidentMap() {
           resources={filterType === "Resources" || filterType === "All" ? resources : []}
           hideResources={filterType !== "All" && filterType !== "Resources"}
           onMarkerClick={(inc) => setSelectedIncident(inc)}
-          // Center coordinate default to New Delhi for mockup visualization
-          center={[28.6139, 77.2090]} 
-          zoom={11}
+          center={defaultCenter}
+          zoom={defaultZoom}
+          bounds={dynamicBounds}
         />
       </div>
 
