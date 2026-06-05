@@ -39,6 +39,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Maximum of 3 trusted contacts allowed" }, { status: 400 });
     }
 
+    if (!user.trustedContacts) {
+      user.trustedContacts = [];
+    }
+
     user.trustedContacts.push({ name, phone, email });
     await user.save();
 

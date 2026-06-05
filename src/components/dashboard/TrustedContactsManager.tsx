@@ -41,25 +41,34 @@ export default function TrustedContactsManager() {
   const handleSave = async () => {
     if (!formData.name || !formData.phone) return;
     try {
+      let res;
       if (editingId) {
-        await fetch("/api/citizen/trusted-contacts", {
+        res = await fetch("/api/citizen/trusted-contacts", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contactId: editingId, ...formData })
         });
       } else {
-        await fetch("/api/citizen/trusted-contacts", {
+        res = await fetch("/api/citizen/trusted-contacts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)
         });
       }
+      
+      const data = await res.json();
+      if (!data.success) {
+        alert("Failed to save contact: " + (data.error || "Unknown error"));
+        return;
+      }
+      
       setFormData({ name: "", phone: "", email: "" });
       setIsAdding(false);
       setEditingId(null);
       fetchContacts();
     } catch (err) {
       console.error(err);
+      alert("An unexpected error occurred");
     }
   };
 
