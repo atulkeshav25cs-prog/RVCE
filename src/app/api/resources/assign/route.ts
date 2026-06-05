@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Resource from "@/models/Resource";
 import EmergencyReport from "@/models/EmergencyReport";
+import WomenSafetyReport from "@/models/WomenSafetyReport";
 import Authority from "@/models/Authority";
 
 export async function POST(req: Request) {
@@ -21,8 +22,12 @@ export async function POST(req: Request) {
 
     await dbConnect();
 
-    // Verify incident exists
-    const report = await EmergencyReport.findOne({ reportId });
+    // Verify incident exists in either collection
+    let report: any = await EmergencyReport.findOne({ reportId });
+    if (!report) {
+      report = await WomenSafetyReport.findOne({ reportId });
+    }
+    
     if (!report) {
       return NextResponse.json({ error: "Incident not found" }, { status: 404 });
     }
@@ -62,6 +67,16 @@ export async function POST(req: Request) {
       report.status = "Acknowledged";
       report.assignedAuthority = authority._id;
       report.assignedAuthorityName = authority.fullName;
+      
+      // Push timeline if it's a Women Safety Report
+      if (report.timeline) {
+        report.timeline.push({
+          status: "Acknowledged",
+          updatedBy: authority.fullName,
+          notes: `Resource ${resourceId} dispatched automatically`
+        });
+      }
+      
       await report.save();
     }
 

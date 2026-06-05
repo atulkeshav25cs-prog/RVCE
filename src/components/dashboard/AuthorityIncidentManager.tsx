@@ -19,19 +19,39 @@ export default function AuthorityIncidentManager({ initialReports }: { initialRe
 
   const handleUpdateStatus = async (reportId: string, status: string, notes: string) => {
     try {
-      const res = await fetch("/api/reports/update-status", {
+      const isWS = reportId.startsWith("WS-");
+      const endpoint = isWS ? "/api/women-safety/update-status" : "/api/reports/update-status";
+      const body = isWS 
+        ? { reportId, status, notes } 
+        : { reportId, status, resolutionNotes: notes };
+
+      const res = await fetch(endpoint, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reportId, status, resolutionNotes: notes })
+        body: JSON.stringify(body)
       });
       const data = await res.json();
+      
       if (data.success) {
         // Refresh local state instantly
-        setReports(prev => prev.map(r => r.reportId === reportId ? { ...r, status, resolutionNotes: notes } : r));
-        setSelectedReport(data.report);
+        const updatedReport = {
+          ...data.report,
+          severity: data.report.severity || data.report.priority
+        };
+        
+        setReports(prev => prev.map(r => r.reportId === reportId ? { 
+          ...r, 
+          status, 
+          resolutionNotes: notes,
+          timeline: data.report.timeline
+        } : r));
+        setSelectedReport(updatedReport);
+      } else {
+        alert("Update failed: " + data.error);
       }
     } catch (err) {
       console.error("Failed to update status", err);
+      alert("Failed to update status");
     }
   };
 

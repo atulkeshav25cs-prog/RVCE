@@ -3,6 +3,8 @@ import { getSession } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Citizen from "@/models/Citizen";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const session = await getSession();

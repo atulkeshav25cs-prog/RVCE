@@ -55,21 +55,7 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
 
   const handleUpdate = async () => {
     setUpdating(true);
-    if (isWomenSafety) {
-      try {
-        await fetch("/api/women-safety/update-status", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ reportId: report.reportId, status, notes })
-        });
-        // trigger UI refresh or handle locally
-        onUpdateStatus(report.reportId, status, notes);
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      await onUpdateStatus(report.reportId, status, notes);
-    }
+    await onUpdateStatus(report.reportId, status, notes);
     setUpdating(false);
   };
 
@@ -137,7 +123,7 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="px-2.5 py-1 text-xs font-bold rounded-md bg-slate-100 text-slate-700">{report.emergencyType}</span>
-            <span className={`px-2.5 py-1 text-xs font-bold rounded-md ${report.severity === 'Critical' ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-600'}`}>{report.severity} Priority</span>
+            <span className={`px-2.5 py-1 text-xs font-bold rounded-md ${(report.severity || report.priority) === 'Critical' ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-600'}`}>{(report.severity || report.priority)} Priority</span>
           </div>
           <h3 className="text-xl font-bold text-slate-900 mb-2">{report.title}</h3>
           <p className="text-sm text-slate-600 whitespace-pre-wrap">{report.description}</p>
