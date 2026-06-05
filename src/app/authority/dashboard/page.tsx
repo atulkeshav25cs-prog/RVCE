@@ -12,6 +12,7 @@ import IncidentMap from "@/components/dashboard/IncidentMap";
 import WeatherWidget from "@/components/dashboard/WeatherWidget";
 
 import EmergencyReport from "@/models/EmergencyReport";
+import { mockAuthorityData } from "@/lib/mockData";
 
 export default async function AuthorityDashboard() {
   const session = await getSession();
