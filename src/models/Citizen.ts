@@ -16,8 +16,4 @@ const CitizenSchema = new mongoose.Schema({
     _id: { type: mongoose.Schema.Types.ObjectId, auto: true }
   }],
 }, { timestamps: true, collection: "citizens" });
-if (mongoose.models.Citizen) {
-  delete mongoose.models.Citizen;
-}
-
-export default mongoose.model("Citizen", CitizenSchema);
+export default mongoose.models.Citizen || mongoose.model("Citizen", CitizenSchema);
