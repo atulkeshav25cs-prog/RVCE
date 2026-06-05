@@ -1,6 +1,7 @@
 import Sidebar from "./Sidebar";
 import TopHeader from "./TopHeader";
 import GlobalSOSButton from "@/components/emergency/GlobalSOSButton";
+import CitizenAIAssistant from "@/components/ai/CitizenAIAssistant";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -26,7 +27,12 @@ export default function DashboardLayout({ children, role, userName, department }
         </main>
       </div>
 
-      {role === "citizen" && <GlobalSOSButton isLoggedIn={true} />}
+      {role === "citizen" && (
+        <>
+          <CitizenAIAssistant />
+          <GlobalSOSButton isLoggedIn={true} />
+        </>
+      )}
     </div>
   );
 }
