@@ -10,6 +10,7 @@ import AdvisoryNotice from "@/components/dashboard/AdvisoryNotice";
 import ProfileCard from "@/components/dashboard/ProfileCard";
 import CitizenDashboardClient from "@/components/dashboard/CitizenDashboardClient";
 import EmergencyReport from "@/models/EmergencyReport";
+import Resource from "@/models/Resource";
 
 import { mockCitizenData } from "@/lib/mockData";
 
@@ -21,7 +22,21 @@ export default async function CitizenDashboard() {
 
   await dbConnect();
   const user = await Citizen.findById(session.id);
-  const reports = await EmergencyReport.find({ citizenId: session.id }).sort({ createdAt: -1 });
+  const reports = await EmergencyReport.find({ citizenId: session.id }).sort({ createdAt: -1 }).lean();
+  const reportIds = reports.map(r => r.reportId);
+  const resources = await Resource.find({ assignedReportId: { $in: reportIds } }).lean();
+
+  const enrichedReports = reports.map(report => {
+    const assignedResource = resources.find(r => r.assignedReportId === report.reportId);
+    return {
+      ...report,
+      assignedResource: assignedResource ? {
+        resourceId: assignedResource.resourceId,
+        resourceType: assignedResource.resourceType,
+        estimatedArrivalMinutes: assignedResource.estimatedArrivalMinutes
+      } : null
+    };
+  });
   
   return (
     <DashboardLayout 
@@ -44,12 +59,13 @@ export default async function CitizenDashboard() {
         
         {/* Main Content (Left 8 Columns) */}
         <div className="lg:col-span-8 space-y-6">
-          <CitizenDashboardClient initialReports={reports.map(r => ({
+          <CitizenDashboardClient initialReports={enrichedReports.map(r => ({
             id: r.reportId,
             type: r.emergencyType,
             status: r.status,
             priority: r.severity,
-            time: new Date(r.createdAt).toLocaleString()
+            time: new Date(r.createdAt).toLocaleString(),
+            assignedResource: r.assignedResource
           }))} />
         </div>
 

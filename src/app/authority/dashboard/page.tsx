@@ -12,6 +12,7 @@ import IncidentMap from "@/components/dashboard/IncidentMap";
 import WeatherWidget from "@/components/dashboard/WeatherWidget";
 
 import EmergencyReport from "@/models/EmergencyReport";
+import Resource from "@/models/Resource";
 import { mockAuthorityData } from "@/lib/mockData";
 
 export default async function AuthorityDashboard() {
@@ -23,6 +24,9 @@ export default async function AuthorityDashboard() {
   await dbConnect();
   const user = await Authority.findById(session.id);
   const reports = await EmergencyReport.find({}).sort({ createdAt: -1 }).lean();
+  const resources = await Resource.find({}).lean();
+
+  const getResourceCount = (status: string) => resources.filter(r => r.status === status).length;
 
   return (
     <DashboardLayout 
@@ -70,17 +74,18 @@ export default async function AuthorityDashboard() {
           
           <WeatherWidget weather={mockAuthorityData.weatherConditions} />
 
-          {/* Resource & Fleet Command */}
+          {/* Resource Inventory Summary */}
           <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
             <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Resource Deployment</h2>
-              <button className="text-slate-500 hover:text-slate-900 text-xs font-bold transition-colors">Manage</button>
+              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Resource Utilization Summary</h2>
+              <button className="text-slate-500 hover:text-slate-900 text-xs font-bold transition-colors">Manage All</button>
             </div>
             <div className="space-y-4">
-              <ResourceStatusWidget label="Ambulance Units" total={mockAuthorityData.resourceAvailability.ambulances.total} available={mockAuthorityData.resourceAvailability.ambulances.available} deployed={mockAuthorityData.resourceAvailability.ambulances.deployed} colorClass="text-blue-600" />
-              <ResourceStatusWidget label="Fire Engines" total={mockAuthorityData.resourceAvailability.fireTrucks.total} available={mockAuthorityData.resourceAvailability.fireTrucks.available} deployed={mockAuthorityData.resourceAvailability.fireTrucks.deployed} colorClass="text-red-600" />
-              <ResourceStatusWidget label="Police Patrols" total={mockAuthorityData.resourceAvailability.policeUnits.total} available={mockAuthorityData.resourceAvailability.policeUnits.available} deployed={mockAuthorityData.resourceAvailability.policeUnits.deployed} colorClass="text-amber-600" />
-              <ResourceStatusWidget label="Search & Rescue" total={mockAuthorityData.resourceAvailability.rescueTeams.total} available={mockAuthorityData.resourceAvailability.rescueTeams.available} deployed={mockAuthorityData.resourceAvailability.rescueTeams.deployed} colorClass="text-emerald-600" />
+              <ResourceStatusWidget label="Available" total={resources.length} available={getResourceCount("Available")} deployed={0} colorClass="text-emerald-600" />
+              <ResourceStatusWidget label="Assigned" total={resources.length} available={getResourceCount("Assigned")} deployed={0} colorClass="text-blue-600" />
+              <ResourceStatusWidget label="Dispatched" total={resources.length} available={getResourceCount("Dispatched")} deployed={0} colorClass="text-indigo-600" />
+              <ResourceStatusWidget label="Busy / On Scene" total={resources.length} available={getResourceCount("Busy")} deployed={0} colorClass="text-purple-600" />
+              <ResourceStatusWidget label="Offline" total={resources.length} available={getResourceCount("Offline")} deployed={0} colorClass="text-slate-600" />
             </div>
           </div>
 

@@ -4,6 +4,11 @@ export interface Report {
   status: string;
   priority: string;
   time: string;
+  assignedResource?: {
+    resourceId: string;
+    resourceType: string;
+    estimatedArrivalMinutes: number;
+  };
 }
 
 interface RecentReportsTableProps {
@@ -46,6 +51,7 @@ export default function RecentReportsTable({ reports }: RecentReportsTableProps)
               <th className="px-6 py-3">Type</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Severity</th>
+              <th className="px-6 py-3">Assigned Unit</th>
               <th className="px-6 py-3 text-right">Time Logged</th>
             </tr>
           </thead>
@@ -63,6 +69,17 @@ export default function RecentReportsTable({ reports }: RecentReportsTableProps)
                   <span className={`px-2.5 py-1 text-xs font-bold rounded-md ${getPriorityColor(report.priority)}`}>
                     {report.priority ? report.priority.toUpperCase() : "N/A"}
                   </span>
+                </td>
+                <td className="px-6 py-4">
+                  {report.assignedResource ? (
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-slate-800">{report.assignedResource.resourceId}</span>
+                      <span className="text-[10px] font-semibold text-slate-500 uppercase">{report.assignedResource.resourceType}</span>
+                      <span className="text-[10px] font-bold text-blue-600 mt-0.5">ETA: {report.assignedResource.estimatedArrivalMinutes} min</span>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-slate-400 italic">Pending Assignment</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-right font-mono text-xs">{report.time || (report as any).date || "N/A"}</td>
               </tr>

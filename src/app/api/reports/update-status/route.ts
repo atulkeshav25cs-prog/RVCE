@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import EmergencyReport from "@/models/EmergencyReport";
 import Authority from "@/models/Authority";
+import Resource from "@/models/Resource";
 
 export async function PATCH(req: Request) {
   try {
@@ -47,6 +48,24 @@ export async function PATCH(req: Request) {
 
     if (!updatedReport) {
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
+    }
+
+    if (status === "Resolved") {
+      // Auto-release assigned resources
+      const resources = await Resource.find({ assignedReportId: reportId });
+      for (const res of resources) {
+        res.status = "Available";
+        const activeAssignment = res.assignmentHistory.find((h: any) => !h.releasedAt);
+        if (activeAssignment) {
+          activeAssignment.releasedAt = new Date();
+        }
+        res.assignedReportId = undefined;
+        res.assignedReportReference = undefined;
+        res.assignedAuthorityId = undefined;
+        res.assignedAuthorityName = undefined;
+        res.estimatedArrivalMinutes = undefined;
+        await res.save();
+      }
     }
 
     return NextResponse.json({ success: true, report: updatedReport }, { status: 200 });
