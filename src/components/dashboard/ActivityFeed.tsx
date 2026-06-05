@@ -1,30 +1,39 @@
-import { Activity, Radio, AlertTriangle, ShieldCheck } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
-const activities = [
-  { id: 1, type: "alert", text: "New critical alert: Multi-vehicle collision on I-95", time: "2 min ago", icon: AlertTriangle, color: "text-rose-500" },
-  { id: 2, type: "dispatch", text: "Medical Unit 4 dispatched to Sector 7", time: "5 min ago", icon: Activity, color: "text-blue-500" },
-  { id: 3, type: "comms", text: "Incoming transmission from Field Command Alpha", time: "12 min ago", icon: Radio, color: "text-amber-500" },
-  { id: 4, type: "system", text: "Resource reallocation successful across all sectors", time: "28 min ago", icon: ShieldCheck, color: "text-emerald-500" },
-];
+export interface ActivityItem {
+  id: string;
+  type: string;
+  text: string;
+  time: string;
+  icon: LucideIcon;
+  color: string;
+}
 
-export default function ActivityFeed() {
+interface ActivityFeedProps {
+  activities: ActivityItem[];
+}
+
+export default function ActivityFeed({ activities }: ActivityFeedProps) {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl p-6">
-      <h2 className="text-lg font-bold text-slate-200 mb-4 border-b border-slate-800 pb-2">Live Activity Feed</h2>
-      <div className="space-y-4">
-        {activities.map((act) => (
-          <div key={act.id} className="flex items-start gap-3">
-            <div className={`mt-1 bg-slate-800 p-1.5 rounded-full border border-slate-700 ${act.color}`}>
+    <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 flex flex-col h-full">
+      <h2 className="text-sm font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3 uppercase tracking-wider">Live Incident Feed</h2>
+      <div className="space-y-5 flex-1">
+        {activities.map((act, index) => (
+          <div key={act.id} className="relative flex items-start gap-4">
+            {index !== activities.length - 1 && (
+              <div className="absolute left-4 top-8 bottom-[-20px] w-px bg-slate-200"></div>
+            )}
+            <div className={`relative z-10 flex-shrink-0 bg-white p-2 rounded-full border shadow-sm ${act.color.replace('text-', 'border-').replace('500', '200')} ${act.color}`}>
               <act.icon className="w-4 h-4" />
             </div>
-            <div>
-              <p className="text-sm font-medium text-slate-300">{act.text}</p>
-              <p className="text-xs text-slate-500 font-mono mt-0.5">{act.time}</p>
+            <div className="pt-1.5">
+              <p className="text-sm font-medium text-slate-700">{act.text}</p>
+              <p className="text-xs text-slate-500 font-mono mt-1">{act.time}</p>
             </div>
           </div>
         ))}
       </div>
-      <button className="w-full mt-4 py-2 border border-slate-800 rounded-lg text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors uppercase tracking-wider">
+      <button className="w-full mt-6 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors uppercase tracking-wider">
         View Full Logs
       </button>
     </div>

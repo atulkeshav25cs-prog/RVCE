@@ -9,17 +9,19 @@ interface StatCardProps {
   colorClass?: string;
 }
 
-export default function StatCard({ title, value, icon: Icon, trend, trendUp, colorClass = "text-blue-500" }: StatCardProps) {
+export default function StatCard({ title, value, icon: Icon, trend, trendUp, colorClass = "text-blue-600" }: StatCardProps) {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl flex flex-col justify-between">
-      <div className="flex justify-between items-start mb-4">
-        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">{title}</h3>
-        <Icon className={`w-5 h-5 ${colorClass}`} />
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between">
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</h3>
+        <div className={`p-2 rounded-lg bg-slate-50 ${colorClass}`}>
+          <Icon className="w-5 h-5" />
+        </div>
       </div>
       <div>
-        <p className="text-3xl font-extrabold text-white">{value}</p>
+        <p className="text-3xl font-extrabold text-slate-900">{value}</p>
         {trend && (
-          <p className={`text-xs mt-2 font-medium ${trendUp ? "text-emerald-500" : "text-rose-500"}`}>
+          <p className={`text-xs mt-2 font-semibold flex items-center ${trendUp ? "text-emerald-600" : "text-rose-600"}`}>
             {trendUp ? "↑" : "↓"} {trend}
           </p>
         )}

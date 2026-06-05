@@ -1,66 +1,69 @@
-interface Report {
+export interface Report {
   id: string;
   type: string;
-  status: "Pending" | "Dispatched" | "Resolved";
-  priority: "High" | "Medium" | "Low" | "Critical";
+  status: string;
+  priority: string;
   time: string;
 }
 
-const mockReports: Report[] = [
-  { id: "INC-9012", type: "Medical Assist", status: "Pending", priority: "Critical", time: "10:42 AM" },
-  { id: "INC-9011", type: "Fire Incident", status: "Dispatched", priority: "High", time: "10:35 AM" },
-  { id: "INC-9010", type: "Flood / Rescue", status: "Resolved", priority: "Medium", time: "09:15 AM" },
-  { id: "INC-9009", type: "Traffic Collision", status: "Dispatched", priority: "High", time: "08:50 AM" },
-];
+interface RecentReportsTableProps {
+  reports: Report[];
+}
 
-export default function RecentReportsTable() {
+export default function RecentReportsTable({ reports }: RecentReportsTableProps) {
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Pending": return "text-amber-500 bg-amber-500/10 border-amber-500/20";
-      case "Dispatched": return "text-blue-500 bg-blue-500/10 border-blue-500/20";
-      case "Resolved": return "text-emerald-500 bg-emerald-500/10 border-emerald-500/20";
-      default: return "text-slate-400 bg-slate-800 border-slate-700";
+    switch (status.toLowerCase()) {
+      case "pending": return "text-amber-700 bg-amber-50 border-amber-200";
+      case "in progress":
+      case "dispatched": return "text-blue-700 bg-blue-50 border-blue-200";
+      case "resolved": 
+      case "closed": return "text-emerald-700 bg-emerald-50 border-emerald-200";
+      default: return "text-slate-600 bg-slate-100 border-slate-200";
     }
   };
 
   const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "Critical": return "text-rose-500";
-      case "High": return "text-orange-500";
-      case "Medium": return "text-amber-500";
-      case "Low": return "text-blue-500";
-      default: return "text-slate-400";
+    switch (priority.toLowerCase()) {
+      case "critical": return "text-red-600 bg-red-50";
+      case "high": return "text-orange-600 bg-orange-50";
+      case "medium": return "text-amber-600 bg-amber-50";
+      case "low": return "text-blue-600 bg-blue-50";
+      default: return "text-slate-600 bg-slate-50";
     }
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
-      <div className="px-6 py-4 border-b border-slate-800">
-        <h2 className="text-lg font-bold text-slate-200">Recent Reports</h2>
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+        <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Recent Emergency Reports</h2>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-400">
-          <thead className="bg-slate-800/50 text-xs uppercase font-semibold text-slate-500">
+        <table className="w-full text-left text-sm text-slate-600">
+          <thead className="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
             <tr>
               <th className="px-6 py-3">Incident ID</th>
               <th className="px-6 py-3">Type</th>
               <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Priority</th>
-              <th className="px-6 py-3 text-right">Time</th>
+              <th className="px-6 py-3">Severity</th>
+              <th className="px-6 py-3 text-right">Time Logged</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/50">
-            {mockReports.map((report) => (
-              <tr key={report.id} className="hover:bg-slate-800/20 transition-colors">
-                <td className="px-6 py-4 font-mono font-medium text-slate-300">{report.id}</td>
-                <td className="px-6 py-4 text-white font-medium">{report.type}</td>
+          <tbody className="divide-y divide-slate-100">
+            {reports.map((report) => (
+              <tr key={report.id} className="hover:bg-slate-50 transition-colors">
+                <td className="px-6 py-4 font-mono font-medium text-slate-900">{report.id}</td>
+                <td className="px-6 py-4 font-medium text-slate-700">{report.type}</td>
                 <td className="px-6 py-4">
-                  <span className={`px-2.5 py-1 text-xs font-bold rounded-full border ${getStatusColor(report.status)}`}>
-                    {report.status}
+                  <span className={`px-2.5 py-1 text-xs font-bold rounded-md border ${getStatusColor(report.status)}`}>
+                    {report.status.toUpperCase()}
                   </span>
                 </td>
-                <td className={`px-6 py-4 font-bold ${getPriorityColor(report.priority)}`}>{report.priority}</td>
-                <td className="px-6 py-4 text-right">{report.time}</td>
+                <td className="px-6 py-4">
+                  <span className={`px-2.5 py-1 text-xs font-bold rounded-md ${getPriorityColor(report.priority)}`}>
+                    {report.priority.toUpperCase()}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-right font-mono text-xs">{report.time}</td>
               </tr>
             ))}
           </tbody>
