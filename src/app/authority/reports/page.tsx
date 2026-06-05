@@ -73,7 +73,7 @@ export default async function AuthorityReportsPage() {
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm">
           <AuthorityIncidentManager initialReports={allReports.map((r: any) => ({
             reportId: r.reportId,
-            citizenId: r.citizenId.toString(),
+            citizenId: r.citizenId ? r.citizenId.toString() : "guest",
             citizenName: r.citizenName,
             emergencyType: r.emergencyType,
             severity: r.severity || r.priority,

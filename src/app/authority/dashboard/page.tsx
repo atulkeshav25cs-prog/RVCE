@@ -108,7 +108,7 @@ export default async function AuthorityDashboard() {
               <div className="bg-white border border-slate-200 rounded-xl shadow-sm lg:col-span-12">
                 <AuthorityIncidentManager initialReports={allReports.map((r: any) => ({
                   reportId: r.reportId,
-                  citizenId: r.citizenId.toString(),
+                  citizenId: r.citizenId ? r.citizenId.toString() : "guest",
                   citizenName: r.citizenName,
                   emergencyType: r.emergencyType,
                   severity: r.severity || r.priority, // map priority to severity for unified UI

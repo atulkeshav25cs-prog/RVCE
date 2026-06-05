@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   try {
     await dbConnect();
     const body = await req.json();
-    const { emergencyType, description, contactNumber, location, latitude, longitude } = body;
+    const { emergencyType, description, contactNumber, location, address, latitude, longitude, accuracy } = body;
 
     if (!emergencyType || !location) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -52,8 +52,10 @@ export async function POST(req: Request) {
       description,
       contactNumber,
       location,
+      address,
       latitude,
       longitude,
+      accuracy,
       ipHash,
       status: "Pending",
       isSOS: true,

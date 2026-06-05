@@ -148,10 +148,28 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
                 <p className="font-bold text-slate-900">{new Date(report.createdAt).toLocaleTimeString()}</p>
               </div>
               <div className="col-span-2">
-                <p className={`text-[10px] font-bold ${report.isGuestSOS ? 'text-amber-600' : 'text-red-500'} uppercase tracking-wider mb-0.5`}>Location</p>
-                <p className="font-bold text-slate-900 truncate" title={report.location}>{report.location}</p>
-                {report.latitude && report.longitude && (
-                  <p className="text-xs text-slate-500 font-mono mt-0.5">{report.latitude}, {report.longitude}</p>
+                <p className={`text-[10px] font-bold ${report.isGuestSOS ? 'text-amber-600' : 'text-red-500'} uppercase tracking-wider mb-0.5`}>Location Information</p>
+                {report.latitude && report.longitude ? (
+                  <div className="bg-white/50 border border-slate-100 p-2 rounded-lg mt-1 space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-xs text-slate-500">Coordinates:</span>
+                      <span className="text-xs font-mono font-bold text-slate-900">{report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}</span>
+                    </div>
+                    {report.address && (
+                      <div className="flex justify-between">
+                        <span className="text-xs text-slate-500">Address:</span>
+                        <span className="text-xs font-bold text-slate-900 text-right max-w-[200px] truncate" title={report.address}>{report.address}</span>
+                      </div>
+                    )}
+                    {report.accuracy && (
+                      <div className="flex justify-between">
+                        <span className="text-xs text-slate-500">Accuracy:</span>
+                        <span className="text-xs font-bold text-slate-900">±{Math.round(report.accuracy)}m</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="font-bold text-slate-900 truncate" title={report.location}>{report.location}</p>
                 )}
               </div>
             </div>

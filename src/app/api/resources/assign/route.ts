@@ -4,6 +4,7 @@ import dbConnect from "@/lib/mongoose";
 import Resource from "@/models/Resource";
 import EmergencyReport from "@/models/EmergencyReport";
 import WomenSafetyReport from "@/models/WomenSafetyReport";
+import GuestSOS from "@/models/GuestSOS";
 import Authority from "@/models/Authority";
 
 export async function POST(req: Request) {
@@ -26,6 +27,9 @@ export async function POST(req: Request) {
     let report: any = await EmergencyReport.findOne({ reportId });
     if (!report) {
       report = await WomenSafetyReport.findOne({ reportId });
+    }
+    if (!report) {
+      report = await GuestSOS.findOne({ referenceId: reportId });
     }
     
     if (!report) {

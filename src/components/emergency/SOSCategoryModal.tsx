@@ -27,7 +27,8 @@ export default function SOSCategoryModal({ isOpen, onClose, isGuest = false }: S
   const [submittedReport, setSubmittedReport] = useState<any>(null);
   const [locationStatus, setLocationStatus] = useState<"pending" | "acquired" | "denied">("pending");
   const [manualLocation, setManualLocation] = useState("");
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [coords, setCoords] = useState<{ lat: number; lng: number; accuracy?: number } | null>(null);
+  const [address, setAddress] = useState("");
 
   if (!isOpen) return null;
 
@@ -36,11 +37,23 @@ export default function SOSCategoryModal({ isOpen, onClose, isGuest = false }: S
     // Request GPS silently when they choose a category
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        async (pos) => {
+          setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy });
+          
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+            const data = await res.json();
+            if (data && data.display_name) {
+              setAddress(data.display_name);
+            }
+          } catch (e) {
+            console.error("Reverse geocoding failed", e);
+          }
+          
           setLocationStatus("acquired");
         },
-        () => setLocationStatus("denied")
+        () => setLocationStatus("denied"),
+        { enableHighAccuracy: true }
       );
     } else {
       setLocationStatus("denied");
@@ -60,8 +73,10 @@ export default function SOSCategoryModal({ isOpen, onClose, isGuest = false }: S
       description: note.trim(), // Optional description
       contactNumber: contactNumber.trim(), // Optional contact
       location: locationStatus === "acquired" ? "GPS Automatically Acquired" : manualLocation,
+      address,
       latitude: coords?.lat,
       longitude: coords?.lng,
+      accuracy: coords?.accuracy,
       severity: "Critical",
       emergencyCategory: selectedCategory
     };
@@ -97,10 +112,12 @@ export default function SOSCategoryModal({ isOpen, onClose, isGuest = false }: S
   const handleReset = () => {
     setSelectedCategory(null);
     setNote("");
+    setContactNumber("");
     setSubmittedReport(null);
     setLocationStatus("pending");
     setManualLocation("");
     setCoords(null);
+    setAddress("");
     onClose();
   };
 
