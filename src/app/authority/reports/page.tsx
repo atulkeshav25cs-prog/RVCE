@@ -84,7 +84,12 @@ export default async function AuthorityReportsPage() {
             contactPhone: r.contactPhone,
             citizenEmail: r.citizenEmail,
             trustedContacts: r.trustedContacts,
-            timeline: r.timeline,
+            timeline: r.timeline ? r.timeline.map((t: any) => ({
+              status: t.status,
+              timestamp: new Date(t.timestamp).toISOString(),
+              notes: t.notes,
+              updatedBy: t.updatedBy
+            })) : [],
             isSOS: r.isSOS,
             isGuestSOS: r.isGuestSOS
           }))} />

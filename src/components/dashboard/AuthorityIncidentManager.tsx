@@ -188,7 +188,7 @@ export default function AuthorityIncidentManager({ initialReports }: { initialRe
                       {report.status.toUpperCase()}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right font-mono text-xs">{new Date(report.createdAt).toLocaleTimeString()}</td>
+                  <td className="px-6 py-4 text-right font-mono text-xs" suppressHydrationWarning>{new Date(report.createdAt).toLocaleTimeString()}</td>
                 </tr>
               ))}
               {filteredReports.length === 0 && (
