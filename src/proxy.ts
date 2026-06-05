@@ -6,10 +6,10 @@ const SECRET_KEY = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback_super_secret_key_for_dev_only_123!"
 );
 
-const citizenProtected = ["/citizen/dashboard", "/citizen/onboarding"];
-const authorityProtected = ["/authority/dashboard", "/authority/onboarding"];
+const citizenProtected = ["/citizen/dashboard"];
+const authorityProtected = ["/authority/dashboard"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   
   const isCitizenProtected = citizenProtected.some(route => path.startsWith(route));
