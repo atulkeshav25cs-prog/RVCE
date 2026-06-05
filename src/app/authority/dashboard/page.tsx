@@ -2,10 +2,9 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Authority from "@/models/Authority";
-import { ShieldAlert, AlertTriangle, Activity, Users, CarFront } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import StatCard from "@/components/dashboard/StatCard";
 import RecentReportsTable from "@/components/dashboard/RecentReportsTable";
 import ResourceStatusWidget from "@/components/dashboard/ResourceStatusWidget";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
@@ -41,45 +40,45 @@ export default async function AuthorityDashboard() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase tracking-wider flex items-center">
+          <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase tracking-wider flex items-center border border-emerald-200">
             <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"></span>
             System Nominal
           </span>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors">
-            Generate Report
+          <button className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors">
+            Initiate Dispatch
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Left Column (70%) */}
-        <div className="lg:col-span-8 space-y-6">
-          {/* KPI Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard title="Active Emergencies" value={mockAuthorityData.kpis.activeEmergencies} icon={AlertTriangle} trend="12% from yesterday" trendUp={false} colorClass="text-red-600" />
-            <StatCard title="Response Teams" value={mockAuthorityData.kpis.responseTeamsDeployed} icon={Users} trend="All units operational" trendUp={true} colorClass="text-blue-600" />
-            <StatCard title="Critical Alerts" value={mockAuthorityData.kpis.criticalAlerts} icon={ShieldAlert} trend="Needs Attention" trendUp={false} colorClass="text-amber-600" />
-            <StatCard title="Avg Response" value={mockAuthorityData.kpis.avgResponseTime} icon={Activity} trend="2m faster" trendUp={true} colorClass="text-emerald-600" />
+        {/* Central Command Feed (8 Columns) */}
+        <div className="lg:col-span-8 space-y-6 flex flex-col">
+          {/* Main Incident Command Table */}
+          <div className="flex-1">
+            <RecentReportsTable reports={mockAuthorityData.activeIncidents.map(inc => ({
+              id: inc.id,
+              type: inc.type,
+              status: inc.status,
+              priority: inc.severity,
+              time: inc.time
+            }))} />
           </div>
 
-          {/* Incident Map */}
+          {/* Active Incident Map */}
           <IncidentMap />
-
-          {/* Activity Feed */}
-          <ActivityFeed activities={[]} /> {/* Empty for now, wait I should use mock data or keep it generic */}
         </div>
 
-        {/* Right Column (30%) */}
+        {/* Right Sidebar: Operations & Resources (4 Columns) */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Weather Widget */}
+          
           <WeatherWidget weather={mockAuthorityData.weatherConditions} />
 
-          {/* Resource Availability */}
+          {/* Resource & Fleet Command */}
           <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
             <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Fleet & Resources</h2>
-              <button className="text-blue-600 hover:text-blue-700 text-xs font-bold">Manage</button>
+              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Resource Deployment</h2>
+              <button className="text-slate-500 hover:text-slate-900 text-xs font-bold transition-colors">Manage</button>
             </div>
             <div className="space-y-4">
               <ResourceStatusWidget label="Ambulance Units" total={mockAuthorityData.resourceAvailability.ambulances.total} available={mockAuthorityData.resourceAvailability.ambulances.available} deployed={mockAuthorityData.resourceAvailability.ambulances.deployed} colorClass="text-blue-600" />
@@ -88,12 +87,11 @@ export default async function AuthorityDashboard() {
               <ResourceStatusWidget label="Search & Rescue" total={mockAuthorityData.resourceAvailability.rescueTeams.total} available={mockAuthorityData.resourceAvailability.rescueTeams.available} deployed={mockAuthorityData.resourceAvailability.rescueTeams.deployed} colorClass="text-emerald-600" />
             </div>
           </div>
+
+          <ActivityFeed activities={[]} /> {/* We pass empty array for now, waiting for actual incidents */}
         </div>
 
       </div>
-
-      {/* Bottom Row */}
-      <RecentReportsTable reports={[]} /> 
     </DashboardLayout>
   );
 }

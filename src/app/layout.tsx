@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import BackgroundSystem from "@/components/BackgroundSystem";
+import RouteWrapper from "@/components/layout/RouteWrapper";
 
 export const metadata: Metadata = {
   title: "National Emergency Authority",
@@ -17,12 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="font-sans antialiased min-h-screen flex flex-col text-slate-900 bg-transparent">
-          <BackgroundSystem />
-          <Navbar />
-          <main className="flex-grow relative z-10">
-            {children}
-          </main>
-          <Footer />
+        <RouteWrapper>
+          {children}
+        </RouteWrapper>
       </body>
     </html>
   );
