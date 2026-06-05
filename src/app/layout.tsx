@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -18,14 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="font-sans antialiased min-h-screen flex flex-col text-slate-900 bg-transparent">
-        <ClerkProvider>
           <BackgroundSystem />
           <Navbar />
           <main className="flex-grow relative z-10">
             {children}
           </main>
           <Footer />
-        </ClerkProvider>
       </body>
     </html>
   );
