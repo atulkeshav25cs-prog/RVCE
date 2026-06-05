@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, AlertTriangle, Activity, Truck, Bell, FileText, PieChart, Settings, LogOut, ShieldAlert } from "lucide-react";
+import { LayoutDashboard, AlertTriangle, Activity, Truck, Bell, FileText, PieChart, Settings, LogOut, ShieldAlert, BookOpen } from "lucide-react";
 
 export default function Sidebar({ role }: { role: string }) {
   const isAuthority = role === "authority";
@@ -17,6 +17,7 @@ export default function Sidebar({ role }: { role: string }) {
     { name: "Resource Tracking", href: "/authority/resources", icon: Truck },
     { name: "Emergency Alerts", href: "/authority/alerts", icon: Bell },
     { name: "Public Records", href: "/authority/records", icon: FileText },
+    { name: "Gov Procedures", href: "/authority/procedures", icon: BookOpen },
     { name: "Analytics", href: "/authority/analytics", icon: PieChart },
     { name: "Settings", href: "/authority/settings", icon: Settings },
   ];
