@@ -11,8 +11,9 @@ export default function RouteWrapper({ children }: { children: React.ReactNode }
   // Ensure login/signup pages keep the landing layout
   const isAuthPage = pathname.includes('/login') || pathname.includes('/signup');
   
-  // App routes use the DashboardLayout shell, so we hide the landing shell
-  const isAppRoute = (pathname.startsWith('/citizen') || pathname.startsWith('/authority')) && !isAuthPage;
+  // App routes use the DashboardLayout shell or are standalone, so we hide the landing shell
+  const isStandalone = pathname.startsWith('/directives') || pathname.startsWith('/procedures');
+  const isAppRoute = (pathname.startsWith('/citizen') || pathname.startsWith('/authority') || isStandalone) && !isAuthPage;
 
   if (isAppRoute) {
     return <>{children}</>;
