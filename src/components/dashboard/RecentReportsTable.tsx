@@ -22,7 +22,8 @@ export default function RecentReportsTable({ reports }: RecentReportsTableProps)
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority?: string) => {
+    if (!priority) return "text-slate-600 bg-slate-50";
     switch (priority.toLowerCase()) {
       case "critical": return "text-red-600 bg-red-50";
       case "high": return "text-orange-600 bg-orange-50";
@@ -60,10 +61,10 @@ export default function RecentReportsTable({ reports }: RecentReportsTableProps)
                 </td>
                 <td className="px-6 py-4">
                   <span className={`px-2.5 py-1 text-xs font-bold rounded-md ${getPriorityColor(report.priority)}`}>
-                    {report.priority.toUpperCase()}
+                    {report.priority ? report.priority.toUpperCase() : "N/A"}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right font-mono text-xs">{report.time}</td>
+                <td className="px-6 py-4 text-right font-mono text-xs">{report.time || (report as any).date || "N/A"}</td>
               </tr>
             ))}
           </tbody>
