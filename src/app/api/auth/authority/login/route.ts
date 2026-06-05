@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import dbConnect from "@/lib/mongoose";
+import Authority from "@/models/Authority";
 import { verifyPassword, encrypt } from "@/lib/auth";
 
 export async function POST(req: Request) {
@@ -11,18 +12,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
     }
 
-    const user = db.prepare("SELECT * FROM users WHERE email = ? AND role = 'authority'").get(email) as any;
+    await dbConnect();
+
+    const user = await Authority.findOne({ email, role: 'authority' });
     if (!user) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const isValid = await verifyPassword(password, user.password_hash);
+    const isValid = await verifyPassword(password, user.passwordHash);
     if (!isValid) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     // Create session
-    const token = await encrypt({ id: user.id, role: user.role, email: user.email });
+    const token = await encrypt({ id: user._id.toString(), role: user.role, email: user.email });
     const response = NextResponse.json({ success: true, redirect: "/authority/dashboard" });
     
     response.cookies.set({

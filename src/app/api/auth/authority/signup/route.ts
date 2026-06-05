@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import dbConnect from "@/lib/mongoose";
+import Authority from "@/models/Authority";
 import { hashPassword, encrypt } from "@/lib/auth";
 
 export async function POST(req: Request) {
@@ -17,22 +18,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid invite code. Contact the system administrator or verify the code configured in .env.local." }, { status: 403 });
     }
 
+    await dbConnect();
+
     // Check if user exists
-    const existing = db.prepare("SELECT email FROM users WHERE email = ?").get(email);
+    const existing = await Authority.findOne({ email });
     if (existing) {
       return NextResponse.json({ error: "Email already registered" }, { status: 400 });
     }
 
     const passwordHash = await hashPassword(password);
-    const id = "auth_" + Date.now() + Math.random().toString(36).substring(2, 9);
     const role = "authority";
 
-    const stmt = db.prepare(`
-      INSERT INTO users (id, role, email, password_hash, full_name, phone, department, authority_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+    const user = await Authority.create({
+      fullName, email, passwordHash, department, authorityId, role
+    });
 
-    stmt.run(id, role, email, passwordHash, fullName, phone, department, authorityId);
+    const id = user._id.toString();
 
     // Create session
     const token = await encrypt({ id, role, email });

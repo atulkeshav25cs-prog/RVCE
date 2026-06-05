@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import db from "@/lib/db";
+import dbConnect from "@/lib/mongoose";
+import Authority from "@/models/Authority";
 import { ShieldAlert, AlertTriangle, Activity, Users, Radio, CarFront } from "lucide-react";
 
 import StatCard from "@/components/dashboard/StatCard";
@@ -14,7 +15,8 @@ export default async function AuthorityDashboard() {
     redirect("/authority/login");
   }
 
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(session.id) as any;
+  await dbConnect();
+  const user = await Authority.findById(session.id);
   
   // Current datetime formatting
   const now = new Date();
@@ -33,7 +35,7 @@ export default async function AuthorityDashboard() {
               Emergency Operations Center
             </h1>
             <p className="text-slate-400 mt-2 text-lg">
-              Commander: <span className="text-white font-medium">{user?.full_name || "Authorized Personnel"}</span> &bull; {user?.department || "Central Command"}
+              Commander: <span className="text-white font-medium">{user?.fullName || "Authorized Personnel"}</span> &bull; {user?.department || "Central Command"}
             </p>
           </div>
           <div className="flex flex-col items-end text-right">

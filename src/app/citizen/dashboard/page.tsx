@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import db from "@/lib/db";
+import dbConnect from "@/lib/mongoose";
+import Citizen from "@/models/Citizen";
 import { AlertTriangle, Activity, Flame, Droplets, ShieldAlert, Clock, User, Phone, Droplet, Calendar } from "lucide-react";
 
 export default async function CitizenDashboard() {
@@ -10,8 +11,8 @@ export default async function CitizenDashboard() {
   }
 
   // Fetch full user details
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(session.id) as any;
-
+  await dbConnect();
+  const user = await Citizen.findById(session.id);
   return (
     <div className="min-h-screen pt-[120px] pb-12 px-4 sm:px-6 lg:px-8 bg-slate-950 text-white">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -44,7 +45,7 @@ export default async function CitizenDashboard() {
               <div className="p-6 space-y-4">
                 <div>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Full Name</p>
-                  <p className="text-white font-medium text-lg">{user?.full_name || "Unknown"}</p>
+                  <p className="text-white font-medium text-lg">{user?.fullName || "Unknown"}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -57,7 +58,7 @@ export default async function CitizenDashboard() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1"><Droplet className="w-3 h-3"/> Blood</p>
-                    <p className="text-rose-400 font-bold">{user?.blood_group || "Unknown"}</p>
+                    <p className="text-rose-400 font-bold">{user?.bloodGroup || "Unknown"}</p>
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Gender</p>

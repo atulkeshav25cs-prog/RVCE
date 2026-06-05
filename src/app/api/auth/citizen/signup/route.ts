@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import dbConnect from "@/lib/mongoose";
+import Citizen from "@/models/Citizen";
 import { hashPassword, encrypt } from "@/lib/auth";
 
 export async function POST(req: Request) {
@@ -11,22 +12,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    await dbConnect();
+
     // Check if user exists
-    const existing = db.prepare("SELECT email FROM users WHERE email = ?").get(email);
+    const existing = await Citizen.findOne({ email });
     if (existing) {
       return NextResponse.json({ error: "Email already registered" }, { status: 400 });
     }
 
     const passwordHash = await hashPassword(password);
-    const id = "cit_" + Date.now() + Math.random().toString(36).substring(2, 9);
     const role = "citizen";
 
-    const stmt = db.prepare(`
-      INSERT INTO users (id, role, email, password_hash, full_name, phone, gender, age, blood_group)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+    const user = await Citizen.create({
+      fullName, email, passwordHash, phone, gender, age, bloodGroup, role
+    });
 
-    stmt.run(id, role, email, passwordHash, fullName, phone, gender, age, bloodGroup);
+    const id = user._id.toString();
 
     // Create session
     const token = await encrypt({ id, role, email });
