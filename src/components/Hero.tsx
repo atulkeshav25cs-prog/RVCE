@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -28,12 +29,12 @@ export default function Hero() {
         </p>
         
         <div className="mt-12 flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
-          <button className="bg-white/95 backdrop-blur-sm text-slate-900 px-10 py-5 text-[12px] font-bold uppercase tracking-[0.1em] hover:bg-white transition-all duration-300">
+          <Link href="/citizen/login" className="bg-white/95 backdrop-blur-sm text-slate-900 px-10 py-5 text-[12px] font-bold uppercase tracking-[0.1em] hover:bg-white transition-all duration-300 text-center">
             Request Immediate Help
-          </button>
-          <button className="bg-black/20 backdrop-blur-md text-white px-10 py-5 text-[12px] font-bold uppercase tracking-[0.1em] border border-white/20 hover:bg-white/10 transition-all duration-300">
+          </Link>
+          <Link href="/alerts" className="bg-black/20 backdrop-blur-md text-white px-10 py-5 text-[12px] font-bold uppercase tracking-[0.1em] border border-white/20 hover:bg-white/10 transition-all duration-300 text-center">
             View Active Alerts
-          </button>
+          </Link>
         </div>
       </div>
     </section>

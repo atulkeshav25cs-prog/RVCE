@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import PublicRecord from "@/models/PublicRecord";
 
-export async function GET(req: Request, { params }: { params: { recordId: string } }) {
+export async function GET(req: Request, { params }: any) {
   try {
     await dbConnect();
     const { recordId } = params;

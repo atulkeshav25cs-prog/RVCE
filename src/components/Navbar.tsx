@@ -33,13 +33,13 @@ export default function Navbar() {
         </div>
         
         <div className="hidden md:flex items-center space-x-12">
-          <Link href="#" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
+          <Link href="/directives" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
             Directives
           </Link>
-          <Link href="#" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
+          <Link href="/departments" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
             Departments
           </Link>
-          <Link href="#" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
+          <Link href="/public-records" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
             Public Records
           </Link>
           <Link href="/authority/login" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${scrolled ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>

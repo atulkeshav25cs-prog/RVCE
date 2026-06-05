@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Services() {
   return (
     <section className="bg-white/95 py-32 px-6 lg:px-12 relative z-10 border-t border-slate-200/50">
@@ -6,10 +8,10 @@ export default function Services() {
           <h2 className="text-5xl sm:text-6xl lg:text-[4rem] font-bold tracking-tight text-slate-900 leading-[1.05] max-w-3xl">
             National Infrastructure & Support
           </h2>
-          <a href="#" className="inline-flex items-center text-[12px] font-bold uppercase tracking-[0.15em] text-slate-900 group whitespace-nowrap mb-2">
+          <Link href="/directives" className="inline-flex items-center text-[12px] font-bold uppercase tracking-[0.15em] text-slate-900 group whitespace-nowrap mb-2">
             View All Directives
             <span className="ml-4 w-12 h-[1px] bg-slate-900/50 group-hover:w-20 transition-all duration-300"></span>
-          </a>
+          </Link>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -20,9 +22,9 @@ export default function Services() {
               <p className="text-slate-600 font-medium text-xl max-w-md leading-[1.6]">Comprehensive training modules and state-sponsored safety initiatives for regional communities.</p>
             </div>
             <div className="mt-16 flex justify-end">
-              <div className="w-16 h-16 border border-slate-300 flex items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all cursor-pointer group">
+              <Link href="/directives" className="w-16 h-16 border border-slate-300 flex items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all cursor-pointer group">
                 <span className="text-2xl font-light leading-none group-hover:translate-x-1 transition-transform">→</span>
-              </div>
+              </Link>
             </div>
           </div>
           
@@ -33,9 +35,9 @@ export default function Services() {
               <p className="text-white/70 font-medium text-xl leading-[1.6]">Financial assistance and recovery programs post-disaster.</p>
             </div>
             <div className="mt-16 flex justify-end">
-              <div className="w-16 h-16 border border-white/20 flex items-center justify-center hover:bg-white hover:text-slate-900 hover:border-white transition-all cursor-pointer group">
+              <Link href="/directives" className="w-16 h-16 border border-white/20 flex items-center justify-center hover:bg-white hover:text-slate-900 hover:border-white transition-all cursor-pointer group">
                 <span className="text-2xl font-light leading-none group-hover:translate-x-1 transition-transform">→</span>
-              </div>
+              </Link>
             </div>
           </div>
         </div>

@@ -1,24 +1,35 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LayoutDashboard, AlertTriangle, Activity, Truck, Bell, FileText, PieChart, Settings, LogOut, ShieldAlert } from "lucide-react";
 
 export default function Sidebar({ role }: { role: string }) {
   const isAuthority = role === "authority";
   const basePath = isAuthority ? "/authority" : "/citizen";
 
-  const navItems = [
-    { name: "Dashboard", href: `${basePath}/dashboard`, icon: LayoutDashboard, active: true },
-    { name: "Emergency Reports", href: "#", icon: AlertTriangle, active: false },
-    ...(isAuthority ? [
-      { name: "Incident Management", href: "#", icon: Activity, active: false },
-      { name: "Resource Tracking", href: "#", icon: Truck, active: false },
-    ] : []),
-    { name: "Emergency Alerts", href: "#", icon: Bell, active: false },
-    { name: "Public Records", href: "#", icon: FileText, active: false },
-    ...(isAuthority ? [
-      { name: "Analytics", href: "#", icon: PieChart, active: false },
-    ] : []),
-    { name: "Settings", href: "#", icon: Settings, active: false },
+  const pathname = usePathname() || "";
+
+  const authorityNav = [
+    { name: "Dashboard", href: "/authority/dashboard", icon: LayoutDashboard },
+    { name: "Emergency Reports", href: "/authority/reports", icon: AlertTriangle },
+    { name: "Incident Management", href: "/authority/reports", icon: Activity },
+    { name: "Resource Tracking", href: "/authority/resources", icon: Truck },
+    { name: "Emergency Alerts", href: "/authority/alerts", icon: Bell },
+    { name: "Public Records", href: "/authority/records", icon: FileText },
+    { name: "Analytics", href: "/authority/analytics", icon: PieChart },
+    { name: "Settings", href: "/authority/settings", icon: Settings },
   ];
+
+  const citizenNav = [
+    { name: "Dashboard", href: "/citizen/dashboard", icon: LayoutDashboard },
+    { name: "Emergency Reports", href: "/citizen/reports", icon: AlertTriangle },
+    { name: "Emergency Alerts", href: "/citizen/alerts", icon: Bell },
+    { name: "Public Records", href: "/citizen/records", icon: FileText },
+    { name: "Settings", href: "/citizen/settings", icon: Settings },
+  ];
+
+  const navItems = isAuthority ? authorityNav : citizenNav;
 
   return (
     <div className="w-64 bg-slate-900 text-slate-300 flex flex-col h-full border-r border-slate-800 hidden md:flex">
@@ -36,12 +47,12 @@ export default function Sidebar({ role }: { role: string }) {
                 key={item.name}
                 href={item.href}
                 className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                  item.active 
+                  pathname === item.href
                     ? "bg-blue-600/10 text-blue-400" 
                     : "hover:bg-slate-800 hover:text-white"
                 }`}
               >
-                <Icon className={`w-5 h-5 mr-3 flex-shrink-0 ${item.active ? "text-blue-500" : "text-slate-500"}`} />
+                <Icon className={`w-5 h-5 mr-3 flex-shrink-0 ${pathname === item.href ? "text-blue-500" : "text-slate-500"}`} />
                 {item.name}
               </Link>
             );
