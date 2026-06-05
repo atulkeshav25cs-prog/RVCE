@@ -4,14 +4,14 @@ import dbConnect from "@/lib/mongoose";
 import Resource from "@/models/Resource";
 import EmergencyReport from "@/models/EmergencyReport";
 
-export async function GET(req: Request, { params }: { params: { reportId: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ reportId: string }> }) {
   try {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
-    const { reportId } = params;
+    const { reportId } = await params;
 
     await dbConnect();
 
