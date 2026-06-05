@@ -5,36 +5,51 @@ import { AlertOctagon, HeartPulse, Flame, Droplets, ShieldAlert, CheckCircle2 } 
 import EmergencyActionCard from "./EmergencyActionCard";
 import RecentReportsTable from "./RecentReportsTable";
 import ReportEmergencyModal from "./ReportEmergencyModal";
+import WomenSafetySOSModal from "./WomenSafetySOSModal";
 import { Report } from "./RecentReportsTable";
 
 export default function CitizenDashboardClient({ initialReports }: { initialReports: Report[] }) {
   const [reports, setReports] = useState<Report[]>(initialReports);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWSModalOpen, setIsWSModalOpen] = useState(false);
   const [prefilledType, setPrefilledType] = useState("");
   const [prefilledSeverity, setPrefilledSeverity] = useState("High");
   const [successId, setSuccessId] = useState<string | null>(null);
 
   const openModal = (type: string, severity: string) => {
-    setPrefilledType(type);
-    setPrefilledSeverity(severity);
-    setIsModalOpen(true);
+    if (type === "Women Safety Incident") {
+      setIsWSModalOpen(true);
+    } else {
+      setPrefilledType(type);
+      setPrefilledSeverity(severity);
+      setIsModalOpen(true);
+    }
   };
 
   const fetchReports = async () => {
     try {
-      const res = await fetch("/api/reports/citizen");
-      const data = await res.json();
-      if (data.success) {
-        const mappedReports = data.reports.map((r: any) => ({
-          id: r.reportId || r._id?.toString(),
-          type: r.emergencyType,
-          status: r.status,
-          priority: r.severity,
-          time: new Date(r.createdAt).toLocaleString(),
-          assignedResource: r.assignedResource
-        }));
-        setReports(mappedReports);
-      }
+      const [res1, res2] = await Promise.all([
+        fetch("/api/reports/citizen"),
+        fetch("/api/women-safety/citizen")
+      ]);
+      const data1 = await res1.json();
+      const data2 = await res2.json();
+      
+      let combined: any[] = [];
+      if (data1.success) combined = [...combined, ...data1.reports];
+      if (data2.success) combined = [...combined, ...data2.reports];
+
+      combined.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      const mappedReports = combined.map((r: any) => ({
+        id: r.reportId || r._id?.toString(),
+        type: r.emergencyType,
+        status: r.status,
+        priority: r.severity || r.priority, // severity for normal, priority for WS
+        time: new Date(r.createdAt).toLocaleString(),
+        assignedResource: r.assignedResource
+      }));
+      setReports(mappedReports);
     } catch (err) {
       console.error("Failed to fetch reports", err);
     }
@@ -116,6 +131,12 @@ export default function CitizenDashboardClient({ initialReports }: { initialRepo
         onSuccess={handleSuccess}
         prefilledType={prefilledType}
         prefilledSeverity={prefilledSeverity}
+      />
+
+      <WomenSafetySOSModal
+        isOpen={isWSModalOpen}
+        onClose={() => setIsWSModalOpen(false)}
+        onSuccess={handleSuccess}
       />
     </>
   );

@@ -49,12 +49,14 @@ export default function AuthorityIncidentManager({ initialReports }: { initialRe
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "Critical": return "text-red-600 bg-red-50";
-      case "High": return "text-orange-600 bg-orange-50";
-      case "Medium": return "text-amber-600 bg-amber-50";
-      case "Low": return "text-blue-600 bg-blue-50";
-      default: return "text-slate-600 bg-slate-50";
+      case "High": return "text-orange-600 bg-orange-50 border-orange-200";
+      case "Medium": return "text-amber-600 bg-amber-50 border-amber-200";
+      case "Low": return "text-blue-600 bg-blue-50 border-blue-200";
+      default: return "text-slate-600 bg-slate-50 border-slate-200";
     }
   };
+
+  const isWomenSafety = (id: string) => id.startsWith("WS-");
 
   return (
     <>
@@ -95,9 +97,19 @@ export default function AuthorityIncidentManager({ initialReports }: { initialRe
                   onClick={() => setSelectedReport(report)}
                   className="hover:bg-slate-50 cursor-pointer transition-colors"
                 >
-                  <td className="px-6 py-4 font-mono font-bold text-slate-900">{report.reportId}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      {isWomenSafety(report.reportId) && (
+                          <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" title="Women Safety SOS"></div>
+                      )}
+                      <span className={`font-mono font-bold ${isWomenSafety(report.reportId) ? 'text-red-700' : 'text-slate-900'}`}>{report.reportId}</span>
+                    </div>
+                  </td>
                   <td className="px-6 py-4 font-medium text-slate-700">{report.citizenName}</td>
-                  <td className="px-6 py-4 font-medium text-slate-700">{report.emergencyType}</td>
+                  <td className="px-6 py-4">
+                    <p className="font-bold text-slate-800">{report.emergencyType}</p>
+                    <p className="text-xs text-slate-500 max-w-xs truncate">{report.description || "No description provided"}</p>
+                  </td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 text-xs font-bold rounded-md ${getPriorityColor(report.severity)}`}>
                       {report.severity.toUpperCase()}

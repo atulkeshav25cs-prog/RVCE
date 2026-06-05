@@ -12,6 +12,7 @@ import IncidentMap from "@/components/dashboard/IncidentMap";
 import WeatherWidget from "@/components/dashboard/WeatherWidget";
 
 import EmergencyReport from "@/models/EmergencyReport";
+import WomenSafetyReport from "@/models/WomenSafetyReport";
 import Resource from "@/models/Resource";
 import { mockAuthorityData } from "@/lib/mockData";
 
@@ -23,7 +24,30 @@ export default async function AuthorityDashboard() {
 
   await dbConnect();
   const user = await Authority.findById(session.id);
-  const reports = await EmergencyReport.find({}).sort({ createdAt: -1 }).lean();
+  
+  const standardReports = await EmergencyReport.find({}).lean();
+  const wsReports = await WomenSafetyReport.find({}).lean();
+
+  const allReports = [...standardReports, ...wsReports];
+
+  // Sorting logic: 1. WS Critical, 2. REP Critical, 3. High, 4. Medium, 5. Low
+  const priorityWeight = (r: any) => {
+    if (r.reportId.startsWith("WS-")) return 5;
+    const severity = r.severity || r.priority;
+    if (severity === "Critical") return 4;
+    if (severity === "High") return 3;
+    if (severity === "Medium") return 2;
+    if (severity === "Low") return 1;
+    return 0;
+  };
+
+  allReports.sort((a, b) => {
+    const pA = priorityWeight(a);
+    const pB = priorityWeight(b);
+    if (pA !== pB) return pB - pA;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   const resources = await Resource.find({}).lean();
 
   const getResourceCount = (status: string) => resources.filter(r => r.status === status).length;
@@ -61,8 +85,22 @@ export default async function AuthorityDashboard() {
         {/* Central Command Feed (8 Columns) */}
         <div className="lg:col-span-8 space-y-6 flex flex-col">
           {/* Main Incident Command Table */}
-          <div className="flex-1">
-            <AuthorityIncidentManager initialReports={JSON.parse(JSON.stringify(reports))} />
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm lg:col-span-12">
+            <AuthorityIncidentManager initialReports={allReports.map((r: any) => ({
+              reportId: r.reportId,
+              citizenId: r.citizenId.toString(),
+              citizenName: r.citizenName,
+              emergencyType: r.emergencyType,
+              severity: r.severity || r.priority, // map priority to severity for unified UI
+              status: r.status,
+              createdAt: r.createdAt.toISOString(),
+              location: r.location,
+              description: r.description,
+              contactPhone: r.contactPhone,
+              citizenEmail: r.citizenEmail,
+              trustedContacts: r.trustedContacts,
+              timeline: r.timeline
+            }))} />
           </div>
 
           {/* Active Incident Map */}

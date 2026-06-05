@@ -9,7 +9,9 @@ import SafetyStatusBanner from "@/components/dashboard/SafetyStatusBanner";
 import AdvisoryNotice from "@/components/dashboard/AdvisoryNotice";
 import ProfileCard from "@/components/dashboard/ProfileCard";
 import CitizenDashboardClient from "@/components/dashboard/CitizenDashboardClient";
+import TrustedContactsManager from "@/components/dashboard/TrustedContactsManager";
 import EmergencyReport from "@/models/EmergencyReport";
+import WomenSafetyReport from "@/models/WomenSafetyReport";
 import Resource from "@/models/Resource";
 
 import { mockCitizenData } from "@/lib/mockData";
@@ -22,11 +24,18 @@ export default async function CitizenDashboard() {
 
   await dbConnect();
   const user = await Citizen.findById(session.id);
-  const reports = await EmergencyReport.find({ citizenId: session.id }).sort({ createdAt: -1 }).lean();
-  const reportIds = reports.map(r => r.reportId);
+  
+  const standardReports = await EmergencyReport.find({ citizenId: session.id }).lean();
+  const wsReports = await WomenSafetyReport.find({ citizenId: session.id }).lean();
+  
+  const allReports = [...standardReports, ...wsReports].sort((a: any, b: any) => 
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  const reportIds = allReports.map((r: any) => r.reportId);
   const resources = await Resource.find({ assignedReportId: { $in: reportIds } }).lean();
 
-  const enrichedReports = reports.map(report => {
+  const enrichedReports = allReports.map((report: any) => {
     const assignedResource = resources.find(r => r.assignedReportId === report.reportId);
     return {
       ...report,
@@ -72,6 +81,7 @@ export default async function CitizenDashboard() {
         {/* Sidebar (Right 4 Columns) */}
         <div className="lg:col-span-4 space-y-6">
           <ProfileCard profile={user} />
+          <TrustedContactsManager />
           
           <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">

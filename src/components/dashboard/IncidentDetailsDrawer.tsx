@@ -1,6 +1,6 @@
 "use client";
 
-import { X, MapPin, User, AlertTriangle, CheckCircle, Clock, Truck } from "lucide-react";
+import { X, MapPin, User, AlertTriangle, CheckCircle, Clock, Truck, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface IncidentDetailsDrawerProps {
@@ -11,6 +11,7 @@ interface IncidentDetailsDrawerProps {
 }
 
 export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdateStatus }: IncidentDetailsDrawerProps) {
+  const isWomenSafety = report?.reportId?.startsWith("WS-");
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState(report?.status || "");
   const [updating, setUpdating] = useState(false);
@@ -31,12 +32,19 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
 
   const fetchResources = async () => {
     try {
-      // Fetch all resources
       const res = await fetch("/api/resources");
       const data = await res.json();
       if (data.success) {
-        setAvailableResources(data.resources.filter((r: any) => r.status === "Available"));
-        // Find assigned resources locally for speed, or we can use the specific endpoint
+        let available = data.resources.filter((r: any) => r.status === "Available");
+        
+        // Enforce resource restrictions for Women Safety
+        if (isWomenSafety) {
+          available = available.filter((r: any) => 
+            ["Police Unit", "Rescue Team", "Medical Team"].includes(r.resourceType)
+          );
+        }
+        
+        setAvailableResources(available);
         const assigned = data.resources.filter((r: any) => r.assignedReportId === report?.reportId);
         setAssignedResources(assigned);
       }
@@ -47,7 +55,21 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
 
   const handleUpdate = async () => {
     setUpdating(true);
-    await onUpdateStatus(report.reportId, status, notes);
+    if (isWomenSafety) {
+      try {
+        await fetch("/api/women-safety/update-status", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reportId: report.reportId, status, notes })
+        });
+        // trigger UI refresh or handle locally
+        onUpdateStatus(report.reportId, status, notes);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      await onUpdateStatus(report.reportId, status, notes);
+    }
     setUpdating(false);
   };
 
@@ -138,6 +160,44 @@ export default function IncidentDetailsDrawer({ isOpen, onClose, report, onUpdat
             </div>
           </div>
         </div>
+
+        {/* TRUSTED CONTACTS MODULE */}
+        {isWomenSafety && report.trustedContacts && report.trustedContacts.length > 0 && (
+          <div className="border-t border-slate-100 pt-6">
+            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center">
+              <Users className="w-4 h-4 mr-2 text-purple-500" />
+              Trusted Contacts
+            </h4>
+            <div className="space-y-2">
+              {report.trustedContacts.map((contact: any, idx: number) => (
+                <div key={idx} className="bg-purple-50 border border-purple-100 rounded-lg p-3">
+                  <p className="text-sm font-bold text-purple-900">{contact.name}</p>
+                  <p className="text-xs font-semibold text-purple-700">{contact.phone} {contact.email && `• ${contact.email}`}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TIMELINE MODULE */}
+        {isWomenSafety && report.timeline && report.timeline.length > 0 && (
+          <div className="border-t border-slate-100 pt-6">
+            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center">
+              <Clock className="w-4 h-4 mr-2 text-slate-500" />
+              Incident Timeline
+            </h4>
+            <div className="space-y-4 pl-2 border-l-2 border-slate-200 ml-2">
+              {report.timeline.map((entry: any, idx: number) => (
+                <div key={idx} className="relative pl-4">
+                  <div className="absolute w-2 h-2 bg-blue-500 rounded-full -left-[5px] top-1.5 ring-4 ring-white"></div>
+                  <p className="text-xs font-bold text-slate-800">{entry.status.toUpperCase()}</p>
+                  <p className="text-[10px] text-slate-500 mb-1">{new Date(entry.timestamp).toLocaleString()} by {entry.updatedBy}</p>
+                  <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">{entry.notes}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* RESOURCE DISPATCH MODULE */}
         <div className="border-t border-slate-100 pt-6">
