@@ -25,7 +25,15 @@ export default function CitizenDashboardClient({ initialReports }: { initialRepo
       const res = await fetch("/api/reports/citizen");
       const data = await res.json();
       if (data.success) {
-        setReports(data.reports);
+        const mappedReports = data.reports.map((r: any) => ({
+          id: r.reportId || r._id?.toString(),
+          type: r.emergencyType,
+          status: r.status,
+          priority: r.severity,
+          time: new Date(r.createdAt).toLocaleString(),
+          assignedResource: r.assignedResource
+        }));
+        setReports(mappedReports);
       }
     } catch (err) {
       console.error("Failed to fetch reports", err);

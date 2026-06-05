@@ -60,7 +60,7 @@ export default async function CitizenDashboard() {
         {/* Main Content (Left 8 Columns) */}
         <div className="lg:col-span-8 space-y-6">
           <CitizenDashboardClient initialReports={enrichedReports.map(r => ({
-            id: r.reportId,
+            id: r.reportId || (r as any)._id?.toString() || Math.random().toString(),
             type: r.emergencyType,
             status: r.status,
             priority: r.severity,
