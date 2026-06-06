@@ -9,7 +9,7 @@ interface Message {
   isEmergency?: boolean;
 }
 
-export default function CitizenAIAssistant() {
+export default function CitizenAIAssistant({ isStandalone = true }: { isStandalone?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -103,7 +103,7 @@ export default function CitizenAIAssistant() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-[#003366] hover:bg-[#002244] text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 z-50 ring-4 ring-white"
+          className={`${isStandalone ? "fixed bottom-6 right-6" : "relative pointer-events-auto"} w-14 h-14 bg-[#003366] hover:bg-[#002244] text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 z-50 ring-4 ring-white`}
         >
           <MessageSquare className="w-6 h-6" />
         </button>
@@ -111,7 +111,7 @@ export default function CitizenAIAssistant() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-[90%] max-w-[400px] h-[600px] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden border border-slate-200 font-sans">
+        <div className={`${isStandalone ? "fixed bottom-6 right-6" : "absolute bottom-full right-0 mb-6"} w-[90vw] sm:w-[400px] h-[600px] max-h-[calc(100vh-140px)] bg-white rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden border border-slate-200 font-sans pointer-events-auto`}>
           {/* Header */}
           <div className="bg-[#003366] p-4 flex justify-between items-center shrink-0">
             <div className="flex items-center text-white">

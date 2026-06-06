@@ -28,10 +28,10 @@ export default function DashboardLayout({ children, role, userName, department }
       </div>
 
       {role === "citizen" && (
-        <>
-          <CitizenAIAssistant />
-          <GlobalSOSButton isLoggedIn={true} />
-        </>
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-6 pointer-events-none">
+          <CitizenAIAssistant isStandalone={false} />
+          <GlobalSOSButton isLoggedIn={true} isStandalone={false} />
+        </div>
       )}
     </div>
   );
