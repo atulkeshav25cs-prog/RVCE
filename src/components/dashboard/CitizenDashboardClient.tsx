@@ -8,7 +8,13 @@ import ReportEmergencyModal from "./ReportEmergencyModal";
 import WomenSafetySOSModal from "./WomenSafetySOSModal";
 import { Report } from "./RecentReportsTable";
 
-export default function CitizenDashboardClient({ initialReports }: { initialReports: Report[] }) {
+export default function CitizenDashboardClient({ 
+  initialReports,
+  mapComponent
+}: { 
+  initialReports: Report[],
+  mapComponent?: React.ReactNode
+}) {
   const [reports, setReports] = useState<Report[]>(initialReports);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isWSModalOpen, setIsWSModalOpen] = useState(false);
@@ -73,53 +79,48 @@ export default function CitizenDashboardClient({ initialReports }: { initialRepo
         </div>
       )}
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6">
-        <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">
-          Emergency Quick Actions
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="sm:col-span-2">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+        <div className="flex flex-col h-full min-h-[400px]">
+          {mapComponent}
+        </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col h-full">
+          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3 shrink-0">
+            Emergency Quick Actions
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 content-start">
             <EmergencyActionCard 
-              title="SOS Alert" 
-              description="Instantly broadcast your location to all nearby emergency responders."
-              icon={AlertOctagon}
-              colorClass="text-red-600"
-              bgHoverClass="hover:bg-red-50"
-              onClick={() => openModal("SOS Alert", "Critical")}
+              title="Medical Emergency" 
+              description="Request an ambulance or medical assistance."
+              icon={HeartPulse}
+              colorClass="text-blue-600"
+              bgHoverClass="hover:bg-blue-50"
+              onClick={() => openModal("Medical Emergency", "Critical")}
+            />
+            <EmergencyActionCard 
+              title="Fire Emergency" 
+              description="Report a fire and request fire department."
+              icon={Flame}
+              colorClass="text-orange-600"
+              bgHoverClass="hover:bg-orange-50"
+              onClick={() => openModal("Fire Emergency", "Critical")}
+            />
+            <EmergencyActionCard 
+              title="Flood / Rescue" 
+              description="Request water rescue or report severe flooding."
+              icon={Droplets}
+              colorClass="text-cyan-600"
+              bgHoverClass="hover:bg-cyan-50"
+              onClick={() => openModal("Flood / Rescue", "High")}
+            />
+            <EmergencyActionCard 
+              title="Women Safety" 
+              description="Trigger priority police dispatch for women in distress."
+              icon={ShieldAlert}
+              colorClass="text-purple-600"
+              bgHoverClass="hover:bg-purple-50"
+              onClick={() => openModal("Women Safety Incident", "Critical")}
             />
           </div>
-          <EmergencyActionCard 
-            title="Medical Emergency" 
-            description="Request an ambulance or medical assistance."
-            icon={HeartPulse}
-            colorClass="text-blue-600"
-            bgHoverClass="hover:bg-blue-50"
-            onClick={() => openModal("Medical Emergency", "Critical")}
-          />
-          <EmergencyActionCard 
-            title="Fire Emergency" 
-            description="Report a fire and request fire department."
-            icon={Flame}
-            colorClass="text-orange-600"
-            bgHoverClass="hover:bg-orange-50"
-            onClick={() => openModal("Fire Emergency", "Critical")}
-          />
-          <EmergencyActionCard 
-            title="Flood / Rescue" 
-            description="Request water rescue or report severe flooding."
-            icon={Droplets}
-            colorClass="text-cyan-600"
-            bgHoverClass="hover:bg-cyan-50"
-            onClick={() => openModal("Flood / Rescue", "High")}
-          />
-          <EmergencyActionCard 
-            title="Women Safety" 
-            description="Trigger priority police dispatch for women in distress."
-            icon={ShieldAlert}
-            colorClass="text-purple-600"
-            bgHoverClass="hover:bg-purple-50"
-            onClick={() => openModal("Women Safety Incident", "Critical")}
-          />
         </div>
       </div>
 

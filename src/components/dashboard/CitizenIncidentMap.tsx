@@ -70,7 +70,7 @@ export default function CitizenIncidentMap() {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative h-[400px] mb-6">
+    <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative h-full min-h-[400px]">
       
       <div className="bg-slate-900 p-3 shrink-0 flex items-center z-10 relative">
         <MapPin className="w-4 h-4 text-indigo-400 mr-2" />
