@@ -68,41 +68,33 @@ export default async function CitizenDashboard() {
 
       <CitizenAlertsBanner />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
-        
-        {/* Main Content (Left 8 Columns) */}
-        <div className="lg:col-span-8 space-y-6">
-          <CitizenDashboardClient 
-            mapComponent={<CitizenIncidentMap />}
-            initialReports={enrichedReports.map(r => ({
-              id: r.reportId || (r as any)._id?.toString() || Math.random().toString(),
-              type: r.emergencyType,
-              status: r.status,
-              priority: r.severity,
-              time: new Date(r.createdAt).toLocaleString(),
-              assignedResource: r.assignedResource
-            }))} 
-          />
-        </div>
-
-        {/* Sidebar (Right 4 Columns) */}
-        <div className="lg:col-span-4 space-y-6">
-          <ProfileCard profile={user} />
-          <TrustedContactsManager />
-          
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">
-              Local Advisories
-            </h2>
-            <div className="space-y-4">
-              {mockCitizenData.advisories.map(adv => (
-                <AdvisoryNotice key={adv.id} advisory={adv} />
-              ))}
+      <CitizenDashboardClient 
+        mapComponent={<CitizenIncidentMap />}
+        profileComponent={<ProfileCard profile={user} />}
+        sidebarComponent={
+          <>
+            <TrustedContactsManager />
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">
+                Local Advisories
+              </h2>
+              <div className="space-y-4">
+                {mockCitizenData.advisories.map(adv => (
+                  <AdvisoryNotice key={adv.id} advisory={adv} />
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
-
-      </div>
+          </>
+        }
+        initialReports={enrichedReports.map(r => ({
+          id: r.reportId || (r as any)._id?.toString() || Math.random().toString(),
+          type: r.emergencyType,
+          status: r.status,
+          priority: r.severity,
+          time: new Date(r.createdAt).toLocaleString(),
+          assignedResource: r.assignedResource
+        }))} 
+      />
     </DashboardLayout>
   );
 }
