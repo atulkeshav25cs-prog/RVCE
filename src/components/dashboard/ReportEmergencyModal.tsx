@@ -80,6 +80,13 @@ export default function ReportEmergencyModal({ isOpen, onClose, onSuccess, prefi
         </div>
 
         <div className="overflow-y-auto p-6">
+          <div className="mb-6 p-4 bg-blue-50 text-blue-800 rounded-lg text-sm border border-blue-200 flex flex-col sm:flex-row justify-between items-center">
+            <span className="font-medium mb-2 sm:mb-0">Need immediate shelter, medical care, or a nearby police station?</span>
+            <a href="/services" target="_blank" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded-md shadow-sm transition-colors whitespace-nowrap text-xs">
+              Find Nearby Services
+            </a>
+          </div>
+
           {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-lg text-sm font-semibold border border-red-200">{error}</div>}
           
           <form id="emergency-form" onSubmit={handleSubmit} className="space-y-6">

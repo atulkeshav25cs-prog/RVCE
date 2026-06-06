@@ -79,7 +79,7 @@ STRICT RULES:
 1. Never claim emergency services were dispatched unless the system confirms it.
 2. Never fabricate official information.
 3. Keep responses concise and highly actionable.
-`;
+4. If the user asks for nearby emergency services (e.g., nearest hospital, police station, blood bank, shelter), briefly explain that the Emergency Services Locator can help and provide this exact markdown link: [Find Nearby Services](/services). DO NOT just reply with the link.`;
 
     if (intent === "Emergency") {
       systemPrompt = `[CRITICAL EMERGENCY MODE ACTIVE]
