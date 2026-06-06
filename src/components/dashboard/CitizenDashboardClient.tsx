@@ -79,15 +79,24 @@ export default function CitizenDashboardClient({
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-        <div className="flex flex-col h-full min-h-[400px]">
-          {mapComponent}
-        </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col h-full">
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3 shrink-0">
+      <div className="flex flex-col space-y-6 mb-6">
+        {mapComponent}
+        
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">
             Emergency Quick Actions
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 content-start">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <EmergencyActionCard 
+                title="SOS Alert" 
+                description="Instantly broadcast your location to all nearby emergency responders."
+                icon={AlertOctagon}
+                colorClass="text-red-600"
+                bgHoverClass="hover:bg-red-50"
+                onClick={() => openModal("SOS Alert", "Critical")}
+              />
+            </div>
             <EmergencyActionCard 
               title="Medical Emergency" 
               description="Request an ambulance or medical assistance."
