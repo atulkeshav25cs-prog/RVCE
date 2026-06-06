@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import MarkerClusterGroup from "react-leaflet-cluster";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 // Fix standard marker icons in Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -99,32 +102,47 @@ export default function ServicesMap({ center, services }: ServicesMapProps) {
       </Marker>
 
       {/* Service Markers */}
-      {services.map((service) => (
-        <Marker 
-          key={service.id} 
-          position={[service.lat, service.lng]} 
-          icon={getIconForType(service.type)}
-        >
-          <Popup>
-            <div className="min-w-[150px]">
-              <div className="font-bold text-slate-900">{service.name}</div>
-              <div className="text-xs text-slate-500 font-semibold mb-1">{service.type}</div>
-              <div className="text-xs text-slate-600 mb-2">{service.address}</div>
-              <div className="text-xs font-bold text-blue-600">{service.distance} km away</div>
-              {service.phone && <div className="text-xs text-slate-700 mt-1">📞 {service.phone}</div>}
-              
-              <a 
-                href={`https://www.google.com/maps/dir/?api=1&destination=${service.lat},${service.lng}`} 
-                target="_blank" 
-                rel="noreferrer"
-                className="mt-3 block text-center bg-slate-900 text-white text-xs font-bold py-1.5 rounded"
-              >
-                Directions
-              </a>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      <MarkerClusterGroup chunkedLoading>
+        {services.map((service, index) => (
+          <Marker 
+            key={service.id || index} 
+            position={[service.lat, service.lng]} 
+            icon={getIconForType(service.type)}
+          >
+            <Popup className="service-popup">
+              <div className="min-w-[160px]">
+                <div className="font-bold text-slate-900">{service.name}</div>
+                <div className="text-xs text-slate-500 font-semibold mb-1">{service.type}</div>
+                <div className="text-xs text-slate-600 mb-2">{service.address}</div>
+                <div className="text-xs font-bold text-blue-600">{service.distance} km away</div>
+                {service.phone && (
+                  <div className="mt-1 text-xs text-slate-700">
+                    <strong>Phone:</strong> {service.phone}
+                  </div>
+                )}
+                <div className="mt-3 pt-2 border-t border-slate-200 flex flex-col space-y-2">
+                  <a 
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${service.lat},${service.lng}`} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="text-xs bg-blue-600 text-white text-center py-1.5 rounded hover:bg-blue-700 transition font-semibold"
+                  >
+                    Directions
+                  </a>
+                  <a 
+                    href={`https://www.google.com/maps/search/?api=1&query=${service.lat},${service.lng}`} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="text-xs bg-slate-100 text-slate-700 text-center py-1.5 rounded hover:bg-slate-200 transition border border-slate-300 font-semibold"
+                  >
+                    Open in Google Maps
+                  </a>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
     </MapContainer>
   );
 }

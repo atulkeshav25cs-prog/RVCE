@@ -5,7 +5,12 @@ import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
-const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
+const OVERPASS_ENDPOINTS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://lz4.overpass-api.de/api/interpreter",
+  "https://z.overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter"
+];
 
 function buildOverpassQuery(lat: number, lng: number, radiusMeters: number, category: string) {
   let tags: string[] = [];
@@ -44,7 +49,7 @@ function buildOverpassQuery(lat: number, lng: number, radiusMeters: number, cate
   const queryNodes = tags.map(tag => `node[${tag}](around:${radiusMeters},${lat},${lng});`).join('');
   const queryWays = tags.map(tag => `way[${tag}](around:${radiusMeters},${lat},${lng});`).join('');
   
-  return `[out:json][timeout:25];(${queryNodes}${queryWays});out center;`;
+  return `[out:json][timeout:90][maxsize:1073741824];(${queryNodes}${queryWays});out center;`;
 }
 
 // Distance calculation using Haversine formula
@@ -95,26 +100,43 @@ export async function GET(req: Request) {
       });
     }
 
-    // Cache miss, call Overpass API
+    // Cache miss, call Overpass API with Fallbacks
     const overpassQuery = buildOverpassQuery(lat, lng, radiusMeters, category);
     
-    const response = await fetch(`${OVERPASS_URL}?_t=${Date.now()}`, {
-      method: 'POST',
-      body: `data=${encodeURIComponent(overpassQuery)}`,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'NationalEmergencyAuthority/1.0 (contact@example.com)'
-      },
-      cache: 'no-store'
-    });
+    let response;
+    let data;
+    let success = false;
+    let lastError = "";
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error("Overpass API Error Status:", response.status, "Body:", errText);
-      throw new Error(`Overpass API error: ${response.status}`);
+    for (const url of OVERPASS_ENDPOINTS) {
+      try {
+        response = await fetch(`${url}?_t=${Date.now()}`, {
+          method: 'POST',
+          body: `data=${encodeURIComponent(overpassQuery)}`,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'NationalEmergencyAuthority/1.0 (contact@example.com)'
+          },
+          cache: 'no-store'
+        });
+
+        if (response.ok) {
+          data = await response.json();
+          success = true;
+          break; // Stop at first successful mirror
+        } else {
+          lastError = `Status ${response.status}`;
+        }
+      } catch (err: any) {
+        lastError = err.message;
+        // Continue to next mirror
+      }
     }
 
-    const data = await response.json();
+    if (!success || !data) {
+      console.error("All Overpass endpoints failed. Last error:", lastError);
+      throw new Error("Overpass API error across all mirrors");
+    }
     
     // Parse results
     const results = (data.elements || []).map((el: any) => {

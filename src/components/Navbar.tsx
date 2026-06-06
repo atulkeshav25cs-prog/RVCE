@@ -34,13 +34,13 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-6 lg:px-12">
-        <div className="flex items-center">
+        <div className="flex flex-1 items-center justify-start">
           <Link href="/">
             <Logo light={!isSolid} className="transition-colors duration-300" />
           </Link>
         </div>
         
-        <div className="hidden md:flex items-center space-x-12">
+        <div className="hidden lg:flex items-center justify-center gap-x-8">
           <Link href="/directives" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${isSolid ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
             Directives
           </Link>
@@ -58,7 +58,7 @@ export default function Navbar() {
           </Link>
         </div>
         
-        <div className="flex items-center">
+        <div className="flex flex-1 items-center justify-end">
           <button 
             onClick={() => setIsAccessModalOpen(true)}
             className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold text-[11px] uppercase tracking-[0.1em] hover:bg-red-700 transition-all shadow-md flex items-center space-x-2"
