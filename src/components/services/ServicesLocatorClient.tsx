@@ -77,7 +77,7 @@ export default function ServicesLocatorClient() {
       
       setResults(data.results || []);
     } catch (err: any) {
-      setError(err.message || "Emergency Services Locator is temporarily unavailable.");
+      setError(err.message || "Unable to retrieve nearby services right now. Please try again shortly.");
     } finally {
       setLoading(false);
     }

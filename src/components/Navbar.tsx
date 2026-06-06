@@ -50,6 +50,9 @@ export default function Navbar() {
           <Link href="/public-records" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${isSolid ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
             Public Records
           </Link>
+          <Link href="/services" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${isSolid ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
+            Emergency Services
+          </Link>
           <Link href="/authority/login" className={`text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${isSolid ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}>
             Authority Access
           </Link>

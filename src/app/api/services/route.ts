@@ -3,6 +3,8 @@ import dbConnect from "@/lib/mongoose";
 import ServiceLocatorCache from "@/models/ServiceLocatorCache";
 import crypto from "crypto";
 
+export const dynamic = "force-dynamic";
+
 const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
 
 function buildOverpassQuery(lat: number, lng: number, radiusMeters: number, category: string) {
@@ -96,16 +98,20 @@ export async function GET(req: Request) {
     // Cache miss, call Overpass API
     const overpassQuery = buildOverpassQuery(lat, lng, radiusMeters, category);
     
-    const response = await fetch(OVERPASS_URL, {
+    const response = await fetch(`${OVERPASS_URL}?_t=${Date.now()}`, {
       method: 'POST',
-      body: overpassQuery,
+      body: `data=${encodeURIComponent(overpassQuery)}`,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'NationalEmergencyAuthority/1.0 (contact@example.com)'
+      },
+      cache: 'no-store'
     });
 
     if (!response.ok) {
-      throw new Error("Overpass API error");
+      const errText = await response.text();
+      console.error("Overpass API Error Status:", response.status, "Body:", errText);
+      throw new Error(`Overpass API error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -156,6 +162,6 @@ export async function GET(req: Request) {
 
   } catch (error: any) {
     console.error("Service Locator API Error:", error);
-    return NextResponse.json({ error: "Emergency Services Locator is temporarily unavailable." }, { status: 503 });
+    return NextResponse.json({ error: "Unable to retrieve nearby services right now. Please try again shortly." }, { status: 503 });
   }
 }
